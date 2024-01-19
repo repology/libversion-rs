@@ -1,9 +1,13 @@
 [package]
-name = "libversion-rs"
+name = "libversion"
+description = "Advanced version string comparison algorithm"
 version = "0.1.0"
+authors = ["Dmitry Marakasov <amdmi3@amdmi3.ru>"]
+repository = "https://github.com/repology/libversion-rs"
+readme = "README.md"
+categories = ["algorithms", "version", "comparison"]
+license = "MIT"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 bitflags = "2.4.2"
