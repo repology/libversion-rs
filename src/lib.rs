@@ -22,8 +22,8 @@ pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) ->
     let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
-    let mut v1_need_extra_component = v1_flags.contains(Flags::LowerBound | Flags::UpperBound);
-    let mut v2_need_extra_component = v2_flags.contains(Flags::LowerBound | Flags::UpperBound);
+    let mut v1_need_extra_component = v1_flags.intersects(Flags::LowerBound | Flags::UpperBound);
+    let mut v2_need_extra_component = v2_flags.intersects(Flags::LowerBound | Flags::UpperBound);
 
     loop {
         let v1_comp = v1_it.next();
