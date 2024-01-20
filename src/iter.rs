@@ -45,7 +45,7 @@ impl VersionComponentIterator<'_> {
     }
 
     pub fn is_exhausted(&self) -> bool {
-        return self.rest_of_version.is_empty();
+        return self.rest_of_version.is_empty() && self.carried_component.is_none();
     }
 }
 
