@@ -51,7 +51,7 @@ pub fn parse_token_to_component(s: &str, flags: Flags) -> (Component, &str) {
         let (number, rest) = split_number(s);
         return (
             Component{
-                precedence: if s.is_empty() { ComponentPrecedence::Zero } else { ComponentPrecedence::NonZero },
+                precedence: if number.is_empty() { ComponentPrecedence::Zero } else { ComponentPrecedence::NonZero },
                 value: number,
             },
             rest
