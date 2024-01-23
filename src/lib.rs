@@ -46,8 +46,6 @@ pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) ->
             }
         }
     }
-
-    return 0;
 }
 
 pub fn version_compare2(v1: &str, v2: &str) -> i8 {

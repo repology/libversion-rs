@@ -68,8 +68,6 @@ pub fn split_alpha(s: &str) -> (&str, &str) {
 }
 
 pub fn skip_number(s: &str) -> &str {
-    let chars = s.chars();
-
     for (i, c) in s.chars().enumerate() {
         if !is_number(c) {
             return &s[i..];
@@ -90,8 +88,6 @@ pub fn split_number(s: &str) -> (&str, &str) {
 }
 
 pub fn skip_zeroes(s: &str) -> &str {
-    let chars = s.chars();
-
     for (i, c) in s.chars().enumerate() {
         if c != '0' {
             return &s[i..];
@@ -102,8 +98,6 @@ pub fn skip_zeroes(s: &str) -> &str {
 }
 
 pub fn skip_separator(s: &str) -> &str {
-    let chars = s.chars();
-
     for (i, c) in s.chars().enumerate() {
         if !is_separator(c) {
             return &s[i..];

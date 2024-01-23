@@ -3,11 +3,8 @@ use crate::parse::{get_next_version_component, SomeComponents};
 use crate::Flags;
 use std::mem;
 
-pub enum IteratedComponent {}
-
 pub struct VersionComponentIterator<'a> {
     rest_of_version: &'a str,
-    needs_trailing_component: bool,
     carried_component: Option<Component<'a>>,
     flags: Flags,
 }
@@ -16,7 +13,6 @@ impl VersionComponentIterator<'_> {
     pub fn new<'a>(version: &'a str, flags: Flags) -> VersionComponentIterator<'a> {
         return VersionComponentIterator {
             rest_of_version: version,
-            needs_trailing_component: flags.contains(Flags::LowerBound | Flags::UpperBound),
             carried_component: None,
             flags,
         };
