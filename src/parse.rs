@@ -33,9 +33,9 @@ pub fn classify_keyword(s: &str, flags: Flags) -> KeywordClass {
     return KeywordClass::Unknown;
 }
 
-pub fn parse_token_to_component(s: &str, flags: Flags) -> (Component, &str) {
-    if is_alpha(s.chars().nth(0).unwrap()) {
-        let (alpha, rest) = split_alpha(s);
+pub fn parse_token_to_component(input: &str, flags: Flags) -> (Component, &str) {
+    let (alpha, rest) = split_alpha(input);
+    if !alpha.is_empty() {
         return (
             Component {
                 precedence: match classify_keyword(alpha, flags) {
@@ -53,21 +53,20 @@ pub fn parse_token_to_component(s: &str, flags: Flags) -> (Component, &str) {
             },
             rest,
         );
-    } else {
-        let s = skip_zeroes(s);
-        let (number, rest) = split_number(s);
-        return (
-            Component {
-                precedence: if number.is_empty() {
-                    ComponentPrecedence::Zero
-                } else {
-                    ComponentPrecedence::NonZero
-                },
-                value: number,
-            },
-            rest,
-        );
     }
+
+    let (number, rest) = split_number(skip_zeroes(input));
+    return (
+        Component {
+            precedence: if number.is_empty() {
+                ComponentPrecedence::Zero
+            } else {
+                ComponentPrecedence::NonZero
+            },
+            value: number,
+        },
+        rest,
+    );
 }
 
 pub fn make_default_component(flags: Flags) -> Component<'static> {
