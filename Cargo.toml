@@ -11,3 +11,8 @@ edition = "2021"
 
 [dependencies]
 bitflags = "2.4.2"
+
+[dev-dependencies.regex]
+version = "1.10.3"
+default-features = false
+features = ["std"]

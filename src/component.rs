@@ -1,4 +1,4 @@
-#[derive(PartialEq, PartialOrd)]
+#[derive(PartialEq, PartialOrd, Debug)]
 pub enum ComponentPrecedence {
     LowerBound,
     PreRelease,
@@ -9,6 +9,7 @@ pub enum ComponentPrecedence {
     UpperBound,
 }
 
+#[derive(Debug)]
 pub struct Component<'a> {
     pub precedence: ComponentPrecedence,
     pub value: &'a str,

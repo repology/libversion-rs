@@ -1,0 +1,385 @@
+# SPDX-FileCopyrightText: 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
+# SPDX-License-Identifier: CC0-1.0
+#
+# Comprehensive test suite for version string comparison algorithms
+#
+# The format is intended to be plain text, human readable and more or
+# less easily parsable to be used in test suite of any version string
+# comparison algorithm/library. It may either be used directly of
+# after conversion into another machine readable format (json currently
+# supported).
+#
+# File syntax:
+# - Lines starting with # are comments and should be ignored
+# - Blank lines should be ignored
+# - Lines starting with [ and ending with ] denote sections
+# - Other lines are test cases in format "version1" "relation sign"
+#   "version2" where both versions are double quoted, relation sign is
+#   one of < (less than), = (equals), and > (greater than), and these
+# 	are delimited with single space characters.
+# - Relations may include additional one letter flags from the list:
+#   p - handle single `p` letter encountered in a version as post-release
+#       keyword ("p is patch")
+#   a - handle any unknown letter sequence encountered in a version string
+#       as post-release keyword ("any is patch")
+#   l - treat version as minimal possible version is the corresponding
+#       branch ("lower bound")
+#   u - treat version as maximal possible version is the corresponding
+#       branch ("lower bound")
+#   These flags may be added at the left or at the right of relation sign,
+#   denoting that they affect corresponding (left hand side or right hand
+#   side) version string. If new flags are introduced which affect
+#   comparison as a whole and not specific side, these may be added at
+#   the any side.
+#
+# Each case is expected to be symmetric (and should be checked both ways
+# by test suite consumers), so there's no need to add explicit "b > a"
+# cases for each "a < b".
+#
+# Test suite consumers may ignore section headers if they don't handle them.
+# However, these may be used to exclude specific features (not supported by
+# corresponding implementation) from testing.
+#
+# Test suite consumers may ignore any comparison flags, cases involving
+# these flags or corresponding sections.
+#
+# Version comparison algorithm implementors are welcome to suggest new flags
+# and test sections. Not supporing implementations are free to ignore these.
+
+[same length numeric comparison]
+"0.0.0" < "0.0.1"
+"0.0.1" < "0.0.2"
+"0.0.2" < "0.0.10"
+"0.0.2" < "0.1.0"
+"0.0.10" < "0.1.0"
+"0.1.0" < "0.1.1"
+"0.1.1" < "1.0.0"
+"1.0.0" < "10.0.0"
+"10.0.0" < "100.0.0"
+"10.10000.10000" < "11.0.0"
+
+[different length numeric comparison]
+"1" < "1.1"
+"1.1" < "1.1.1"
+"1.1.1" < "1.2"
+"1.2" < "2"
+
+[zero minor components]
+"1" = "1.0"
+"1" = "1.0.0"
+"1.0" = "1.0.0"
+"1.0" = "1.0.0.0.0.0.0.0"
+
+[leading zeroes]
+"00100.00100" = "100.100"
+"0" = "00000000000000000"
+
+[letter addendum]
+"1.0" < "1.0a"
+"1.0a" < "1.0b"
+"1.0b" < "1.0y"
+"1.0y" < "1.0z"
+"1.0z" < "1.1"
+
+[pre-release keywords]
+"1.0alpha-1" > "0.9"
+"1.0alpha-1" < "1.0"
+"1.0alpha-1" < "1.0.1"
+"1.0alpha-1" < "1.1"
+
+"1.0beta-1" > "0.9"
+"1.0beta-1" < "1.0"
+"1.0beta-1" < "1.0.1"
+"1.0beta-1" < "1.1"
+
+"1.0pre-1" > "0.9"
+"1.0pre-1" < "1.0"
+"1.0pre-1" < "1.0.1"
+"1.0pre-1" < "1.1"
+
+"1.0prerelease-1" > "0.9"
+"1.0prerelease-1" < "1.0"
+"1.0prerelease-1" < "1.0.1"
+"1.0prerelease-1" < "1.1"
+
+"1.0rc-1" > "0.9"
+"1.0rc-1" < "1.0"
+"1.0rc-1" < "1.0.1"
+"1.0rc-1" < "1.1"
+
+[post-release keywords]
+"1.0patch1" > "0.9"
+"1.0patch1" > "1.0"
+"1.0patch1" < "1.0.1"
+"1.0patch1" < "1.1"
+
+"1.0.patch1" > "0.9"
+"1.0.patch1" > "1.0"
+"1.0.patch1" < "1.0.1"
+"1.0.patch1" < "1.1"
+
+"1.0patch.1" > "0.9"
+"1.0patch.1" > "1.0"
+"1.0patch.1" < "1.0.1"
+"1.0patch.1" < "1.1"
+
+"1.0.patch.1" > "0.9"
+"1.0.patch.1" > "1.0"
+"1.0.patch.1" < "1.0.1"
+"1.0.patch.1" < "1.1"
+
+"1.0post1" > "0.9"
+"1.0post1" > "1.0"
+"1.0post1" < "1.0.1"
+"1.0post1" < "1.1"
+
+"1.0postanythinggoeshere1" > "0.9"
+"1.0postanythinggoeshere1" > "1.0"
+"1.0postanythinggoeshere1" < "1.0.1"
+"1.0postanythinggoeshere1" < "1.1"
+
+"1.0pl1" > "0.9"
+"1.0pl1" > "1.0"
+"1.0pl1" < "1.0.1"
+"1.0pl1" < "1.1"
+
+"1.0errata1" > "0.9"
+"1.0errata1" > "1.0"
+"1.0errata1" < "1.0.1"
+"1.0errata1" < "1.1"
+
+[prerelease sequence]
+# Note: ordering between `rc` and `pre` is not defined. Should it be?
+"1.0alpha1" < "1.0alpha2"
+"1.0alpha2" < "1.0beta1"
+"1.0beta1" < "1.0beta2"
+"1.0beta2" < "1.0rc1"
+"1.0beta2" < "1.0pre1"
+"1.0rc1" < "1.0"
+"1.0pre1" < "1.0"
+
+"1.0.alpha1" < "1.0.alpha2"
+"1.0.alpha2" < "1.0.beta1"
+"1.0.beta1" < "1.0.beta2"
+"1.0.beta2" < "1.0.rc1"
+"1.0.beta2" < "1.0.pre1"
+"1.0.rc1" < "1.0"
+"1.0.pre1" < "1.0"
+
+"1.0alpha.1" < "1.0alpha.2"
+"1.0alpha.2" < "1.0beta.1"
+"1.0beta.1" < "1.0beta.2"
+"1.0beta.2" < "1.0rc.1"
+"1.0beta.2" < "1.0pre.1"
+"1.0rc.1" < "1.0"
+"1.0pre.1" < "1.0"
+
+"1.0.alpha.1" < "1.0.alpha.2"
+"1.0.alpha.2" < "1.0.beta.1"
+"1.0.beta.1" < "1.0.beta.2"
+"1.0.beta.2" < "1.0.rc.1"
+"1.0.beta.2" < "1.0.pre.1"
+"1.0.rc.1" < "1.0"
+"1.0.pre.1" < "1.0"
+
+[keyword separation styles]
+"1.0alpha1" = "1.0alpha1"
+"1.0alpha1" = "1.0.alpha1"
+"1.0alpha1" = "1.0alpha.1"
+"1.0alpha1" = "1.0.alpha.1"
+
+"1.0patch1" = "1.0patch1"
+"1.0patch1" = "1.0.patch1"
+"1.0patch1" = "1.0patch.1"
+"1.0patch1" = "1.0.patch.1"
+
+[numberless keywords]
+"1.0alpha" < "1.0"
+"1.0.alpha" < "1.0"
+
+"1.0beta" < "1.0"
+"1.0.beta" < "1.0"
+
+"1.0rc" < "1.0"
+"1.0.rc" < "1.0"
+
+"1.0pre" < "1.0"
+"1.0.pre" < "1.0"
+
+"1.0prerelese" < "1.0"
+"1.0.prerelese" < "1.0"
+
+"1.0patch" > "1.0"
+"1.0.patch" > "1.0"
+
+[case insensitivity]
+"a" = "A"
+"p" = "P"
+"1alpha" = "1ALPHA"
+"alpha1" = "ALPHA1"
+"AlPhA" = "alpha"
+"patch" = "PATCH"
+"1beta2gamma3" = "1beTA2gaMMA3"
+
+[empty string]
+"" = ""
+"" < "1"
+# XXX: Should it be this specific?
+"" = "0"
+
+[different separators]
+"1.0.alpha.2" = "1_0_alpha_2"
+"1.0.alpha.2" = "1-0-alpha-2"
+"1.0.alpha.2" = "1,0:alpha~2"
+"1.0.alpha.2" = "1 0 alpha 2"
+
+[multiple separators]
+"..1....2....3.." = "1.2.3"
+".-~1~-.-~2~-." = "1.2"
+".,:;~+-_" = ""
+
+[version equality]
+"" = ""
+"0" = "0"
+"0a" = "0a"
+"a" = "a"
+"a0" = "a0"
+"0a1" = "0a1"
+"0a1b2" = "0a1b2"
+"1alpha1" = "1alpha1"
+"1.2.3" = "1.2.3"
+"." = "."
+"fooBAR" = "fooBAR"
+"hello.world" = "hello.world"
+".-~1~-.-~2~-." = ".-~1~-.-~2~-."
+
+[long numbers]
+"20160101" < "20160102"
+"999999999999999999" < "1000000000000000000"
+
+[very long numbers]
+# this does not fit into 64 bits
+"99999999999999999998" < "99999999999999999999"
+
+[very very long numbers]
+# this does not even fit into 128 bits
+"999999999999999999999999999999999999998" < "999999999999999999999999999999999999999"
+
+# XXX: refactor these
+[letter versus number]
+"a" < "0"
+"1.a" < "1.0"
+
+[single letter component]
+"1.0.a" < "1.0.b"
+"1.0.b" < "1.0.c"
+"1.0.c" < "1.0"
+"1.0.c" < "1.0.0"
+
+[letter component split]
+"1.0a0" = "1.0.a0"
+"1.0beta3" = "1.0.b3"
+
+[strings are shortened to one letter]
+"a" = "alpha"
+"b" = "beta"
+"p" = "prerelease"
+# /XXX
+
+[p/patch compatibility]
+"1.0p1" = "1.0pre1"
+"1.0p1" < "1.0patch1"
+"1.0p1" < "1.0post1"
+
+# affected by `p is patch` flag
+"1.0p1" p>p "1.0pre1"
+"1.0p1" p=p "1.0patch1"
+"1.0p1" p=p "1.0post1"
+
+[flags: p is patch]
+"1.0p1" = "1.0p1"
+"1.0p1" p=p "1.0p1"
+"1.0p1" p> "1.0p1"
+"1.0p1" <p "1.0p1"
+
+"1.0p1" = "1.0P1"
+"1.0p1" p=p "1.0P1"
+
+"1.0" > "1.0p1"
+"1.0" p> "1.0p1"
+"1.0" <p "1.0p1"
+
+"1.0" > "1.0.p1"
+"1.0" p> "1.0.p1"
+"1.0" <p "1.0.p1"
+
+"1.0" > "1.0.p.1"
+"1.0" p> "1.0.p.1"
+"1.0" <p "1.0.p.1"
+
+# this case should not be not affected, because p is treated as letter suffix
+"1.0" < "1.0p.1"
+"1.0" p< "1.0p.1"
+"1.0" <p "1.0p.1"
+
+[flags: any is patch]
+"1.0a1" = "1.0a1"
+"1.0a1" a=a "1.0a1"
+"1.0a1" a> "1.0a1"
+"1.0a1" <a "1.0a1"
+
+"1.0" > "1.0a1"
+"1.0" a> "1.0a1"
+"1.0" <a "1.0a1"
+
+"1.0" > "1.0.a1"
+"1.0" a> "1.0.a1"
+"1.0" <a "1.0.a1"
+
+"1.0" > "1.0.a.1"
+"1.0" a> "1.0.a.1"
+"1.0" <a "1.0.a.1"
+
+# this case should not be not affected, because a is treated as letter suffix
+"1.0" < "1.0a.1"
+"1.0" a< "1.0a.1"
+"1.0" <a "1.0a.1"
+
+[flags: upper and lower bounds]
+"0.99999" < "1.0"
+"1.0alpha" < "1.0"
+"1.0alpha0" < "1.0"
+"1.0" = "1.0"
+"1.0patch" > "1.0"
+"1.0patch0" > "1.0"
+"1.0.1" > "1.0"
+"1.1" > "1.0"
+
+"0.99999" <l "1.0"
+"1.0alpha" >l "1.0"
+"1.0alpha0" >l "1.0"
+"1.0" >l "1.0"
+"1.0patch" >l "1.0"
+"1.0patch0" >l "1.0"
+"1.0a" >l "1.0"
+"1.0.1" >l "1.0"
+"1.1" >l "1.0"
+
+"0.99999" <u "1.0"
+"1.0alpha" <u "1.0"
+"1.0alpha0" <u "1.0"
+"1.0" <u "1.0"
+"1.0patch" <u "1.0"
+"1.0patch0" <u "1.0"
+"1.0a" <u "1.0"
+"1.0.1" <u "1.0"
+"1.1" >u "1.0"
+
+"1.0" l=l "1.0"
+"1.0" u=u "1.0"
+"1.0" l<u "1.0"
+
+"1.0" u<l "1.1"
+
+"0" u>u "0.0"
+"0" l<l "0.0"

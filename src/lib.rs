@@ -9,7 +9,7 @@ mod compare;
 mod iter;
 
 bitflags! {
-    #[derive(Clone, Copy)]
+    #[derive(Clone, Copy, Debug)]
     pub struct Flags: u32 {
         const PIsPatch   = 0b00000001;
         const AnyIsPatch = 0b00000010;
