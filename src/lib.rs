@@ -1,12 +1,12 @@
-use bitflags::bitflags;
-use crate::iter::VersionComponentIterator;
 use crate::compare::compare_components;
+use crate::iter::VersionComponentIterator;
+use bitflags::bitflags;
 
-mod string;
-mod parse;
-mod component;
 mod compare;
+mod component;
 mod iter;
+mod parse;
+mod string;
 
 bitflags! {
     #[derive(Clone, Copy, Debug)]
@@ -51,7 +51,7 @@ pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) ->
 }
 
 pub fn version_compare2(v1: &str, v2: &str) -> i8 {
-    return version_compare4(v1, v2, Flags::empty(), Flags::empty())
+    return version_compare4(v1, v2, Flags::empty(), Flags::empty());
 }
 
 #[cfg(test)]

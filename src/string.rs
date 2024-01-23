@@ -28,13 +28,13 @@ pub fn strings_are_equal_ci(a: &str, b: &str) -> bool {
                 if to_lower(a_val) != to_lower(b_val) {
                     return false;
                 }
-            },
+            }
             (None, None) => {
                 return true;
-            },
+            }
             _ => {
                 return false;
-            },
+            }
         }
     }
 }

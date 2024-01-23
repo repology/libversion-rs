@@ -1,6 +1,6 @@
 use libversion::*;
-use suite_parser::*;
 use std::env;
+use suite_parser::*;
 
 mod suite_parser;
 
@@ -9,15 +9,15 @@ fn parse_flags(flags: &str) -> Flags {
 
     for flag in flags.chars() {
         res |= match flag {
-            'p' => Flags::PIsPatch, 
-            'a' => Flags::AnyIsPatch, 
-            'l' => Flags::LowerBound, 
-            'u' => Flags::UpperBound, 
+            'p' => Flags::PIsPatch,
+            'a' => Flags::AnyIsPatch,
+            'l' => Flags::LowerBound,
+            'u' => Flags::UpperBound,
             _ => Flags::empty(),
         }
     }
 
-    return res
+    return res;
 }
 
 fn parse_op(op: &str) -> i8 {
@@ -55,7 +55,11 @@ fn version_comparison_test_suite() {
             left_flags,
             right_flags,
         );
-        println!("{} {}", if result == expected { "OK" } else { "FAILED" }, case.text);
+        println!(
+            "{} {}",
+            if result == expected { "OK" } else { "FAILED" },
+            case.text
+        );
         assert!(
             result == expected,
             "Test suite case {}:{}: {} failed with unexpected result {}",

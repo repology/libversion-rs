@@ -1,11 +1,9 @@
-use std::mem;
-use crate::Flags;
 use crate::component::Component;
-use crate::parse::{SomeComponents, get_next_version_component};
+use crate::parse::{get_next_version_component, SomeComponents};
+use crate::Flags;
+use std::mem;
 
-pub enum IteratedComponent {
-
-}
+pub enum IteratedComponent {}
 
 pub struct VersionComponentIterator<'a> {
     rest_of_version: &'a str,
@@ -16,11 +14,11 @@ pub struct VersionComponentIterator<'a> {
 
 impl VersionComponentIterator<'_> {
     pub fn new<'a>(version: &'a str, flags: Flags) -> VersionComponentIterator<'a> {
-        return VersionComponentIterator{
+        return VersionComponentIterator {
             rest_of_version: version,
             needs_trailing_component: flags.contains(Flags::LowerBound | Flags::UpperBound),
             carried_component: None,
-            flags
+            flags,
         };
     }
 
@@ -29,14 +27,15 @@ impl VersionComponentIterator<'_> {
             return component;
         }
 
-        let (components, rest_of_version) = get_next_version_component(self.rest_of_version, self.flags);
+        let (components, rest_of_version) =
+            get_next_version_component(self.rest_of_version, self.flags);
 
         self.rest_of_version = rest_of_version;
 
         match components {
             SomeComponents::One(component) => {
                 return component;
-            },
+            }
             SomeComponents::Two(component1, component2) => {
                 self.carried_component = Some(component2);
                 return component1;
@@ -48,4 +47,3 @@ impl VersionComponentIterator<'_> {
         return self.rest_of_version.is_empty() && self.carried_component.is_none();
     }
 }
-
