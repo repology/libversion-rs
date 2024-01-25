@@ -1,4 +1,4 @@
-#[derive(PartialEq, PartialOrd, Debug)]
+#[derive(PartialOrd, PartialEq, Eq, Ord, Debug)]
 pub enum ComponentPrecedence {
     LowerBound,
     PreRelease,

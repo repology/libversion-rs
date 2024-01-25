@@ -1,55 +1,25 @@
 use crate::component::Component;
 use crate::string::{is_alpha, to_lower};
 
-macro_rules! return_if_nonequal {
-    ($a:expr, $b:expr) => {
-        {
-            if $a < $b {
-                return std::cmp::Ordering::Less;
-            }
-            if $a > $b {
-                return std::cmp::Ordering::Greater;
-            }
-        }
-    }
-}
-
 pub fn compare_components(a: &Component, b: &Component) -> std::cmp::Ordering {
-    // precedence has highest priority
-    return_if_nonequal!(a.precedence, b.precedence);
-
-    // empty strings come before everything
-    if a.value.is_empty() && b.value.is_empty() {
-        return std::cmp::Ordering::Equal;
-    }
-    if a.value.is_empty() {
-        return std::cmp::Ordering::Less;
-    }
-    if b.value.is_empty() {
-        return std::cmp::Ordering::Greater;
-    }
-
-    // alpha come before numbers
-    let a_first = a.value.chars().nth(0).unwrap();
-    let b_first = b.value.chars().nth(0).unwrap();
-    let a_is_alpha = is_alpha(a_first);
-    let b_is_alpha = is_alpha(b_first);
-
-    if a_is_alpha && b_is_alpha {
-        return_if_nonequal!(to_lower(a_first), to_lower(b_first));
-        return std::cmp::Ordering::Equal;
-    }
-    if a_is_alpha {
-        return std::cmp::Ordering::Less;
-    }
-    if b_is_alpha {
-        return std::cmp::Ordering::Greater;
-    }
-
-    // numeric comparison (note that leading zeroes are already trimmed here)
-    return_if_nonequal!(a.value.len(), b.value.len());
-    return_if_nonequal!(a.value, b.value);
-    return std::cmp::Ordering::Equal;
+    a.precedence.cmp(&b.precedence).then_with(|| {
+        let a_first = a.value.chars().nth(0);
+        if a_first.is_some_and(|c| is_alpha(c)) {
+            // string comparison: one of args is alphabetic, other is too
+            // compare lowercase (which provides us case insensitivity) of their
+            // first letters
+            let b_first = b.value.chars().nth(0).unwrap();
+            to_lower(a_first.unwrap()).cmp(&to_lower(b_first))
+        } else {
+            // numeric comparison: compare lengths, then values, which
+            // allows numeric comparison of arbitrary long numbers
+            // note that leading zeroes are already skipped here
+            a.value
+                .len()
+                .cmp(&b.value.len())
+                .then_with(|| a.value.cmp(&b.value))
+        }
+    })
 }
 
 #[cfg(test)]
