@@ -47,16 +47,6 @@ pub fn string_has_prefix_ci(s: &str, prefix: &str) -> bool {
     return strings_are_equal_ci(&s[0..prefix.len()], prefix);
 }
 
-pub fn skip_alpha(s: &str) -> &str {
-    for (i, c) in s.chars().enumerate() {
-        if !is_alpha(c) {
-            return &s[i..];
-        }
-    }
-
-    return &s[0..0];
-}
-
 pub fn split_alpha(s: &str) -> (&str, &str) {
     for (i, c) in s.chars().enumerate() {
         if !is_alpha(c) {
@@ -65,16 +55,6 @@ pub fn split_alpha(s: &str) -> (&str, &str) {
     }
 
     return (s, &s[0..0]);
-}
-
-pub fn skip_number(s: &str) -> &str {
-    for (i, c) in s.chars().enumerate() {
-        if !is_number(c) {
-            return &s[i..];
-        }
-    }
-
-    return &s[0..0];
 }
 
 pub fn split_number(s: &str) -> (&str, &str) {
@@ -179,22 +159,6 @@ mod tests {
         assert!(!string_has_prefix_ci("bbb", "aaa"));
         assert!(!string_has_prefix_ci("foo", "foox"));
         assert!(string_has_prefix_ci("foox", "foo"));
-    }
-
-    #[test]
-    fn test_skip_alpha() {
-        assert_eq!(skip_alpha("foo123"), "123");
-        assert_eq!(skip_alpha("123foo"), "123foo");
-        assert_eq!(skip_alpha("123"), "123");
-        assert_eq!(skip_alpha("foo"), "");
-    }
-
-    #[test]
-    fn test_skip_number() {
-        assert_eq!(skip_number("foo123"), "foo123");
-        assert_eq!(skip_number("123foo"), "foo");
-        assert_eq!(skip_number("123"), "");
-        assert_eq!(skip_number("foo"), "foo");
     }
 
     #[test]

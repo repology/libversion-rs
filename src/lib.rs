@@ -1,8 +1,6 @@
-use crate::compare::compare_components;
 use crate::iter::VersionComponentIterator;
 use bitflags::bitflags;
 
-mod compare;
 mod component;
 mod iter;
 mod parse;
@@ -34,7 +32,7 @@ pub fn version_compare4(
         let v1_comp = v1_it.next();
         let v2_comp = v2_it.next();
 
-        let res = compare_components(&v1_comp, &v2_comp);
+        let res = v1_comp.cmp(&v2_comp);
         if res != std::cmp::Ordering::Equal {
             return res;
         }
