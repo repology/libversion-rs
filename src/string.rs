@@ -7,7 +7,7 @@ pub fn is_number(c: u8) -> bool {
 }
 
 pub fn is_separator(c: u8) -> bool {
-    return !is_alpha(c) && !is_number(c) && c != b'\0';
+    !is_alpha(c) && !is_number(c) && c != b'\0'
 }
 
 pub fn to_lower(c: u8) -> u8 {
