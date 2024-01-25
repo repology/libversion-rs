@@ -1,5 +1,4 @@
 use libversion::*;
-use std::env;
 use suite_parser::*;
 
 mod suite_parser;
@@ -41,8 +40,6 @@ fn display_op(op: std::cmp::Ordering) -> &'static str {
 fn version_comparison_test_suite() {
     let data_path = "testdata/version-comparison-tests.txt";
     let cases = parse_test_suite(data_path);
-
-    let mut error_count = 0;
 
     for case in cases {
         let left_flags = parse_flags(&case.left_flags);

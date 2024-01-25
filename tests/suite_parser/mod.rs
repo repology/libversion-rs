@@ -1,6 +1,5 @@
 use regex::Regex;
 use std::fs::File;
-use std::io;
 use std::io::prelude::*;
 use std::io::BufReader;
 
