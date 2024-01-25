@@ -1,26 +1,26 @@
-pub fn is_alpha(c: char) -> bool {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+pub fn is_alpha(c: u8) -> bool {
+    c >= b'a' && c <= b'z' || c >= b'A' && c <= b'Z'
 }
 
-pub fn is_number(c: char) -> bool {
-    return c >= '0' && c <= '9';
+pub fn is_number(c: u8) -> bool {
+    c >= b'0' && c <= b'9'
 }
 
-pub fn is_separator(c: char) -> bool {
-    return !is_alpha(c) && !is_number(c) && c != '\0';
+pub fn is_separator(c: u8) -> bool {
+    return !is_alpha(c) && !is_number(c) && c != b'\0';
 }
 
-pub fn to_lower(c: char) -> char {
-    if c >= 'A' && c <= 'Z' {
-        return char::from_u32(c as u32 - 'A' as u32 + 'a' as u32).unwrap_or(c);
+pub fn to_lower(c: u8) -> u8 {
+    if c >= b'A' && c <= b'Z' {
+        c - b'A' + b'a'
     } else {
-        return c;
+        c
     }
 }
 
 pub fn strings_are_equal_ci(a: &str, b: &str) -> bool {
-    let mut a_it = a.chars();
-    let mut b_it = b.chars();
+    let mut a_it = a.bytes();
+    let mut b_it = b.bytes();
 
     loop {
         match (a_it.next(), b_it.next()) {
@@ -48,7 +48,7 @@ pub fn string_has_prefix_ci(s: &str, prefix: &str) -> bool {
 }
 
 pub fn split_alpha(s: &str) -> (&str, &str) {
-    for (i, c) in s.chars().enumerate() {
+    for (i, c) in s.bytes().enumerate() {
         if !is_alpha(c) {
             return (&s[0..i], &s[i..]);
         }
@@ -58,7 +58,7 @@ pub fn split_alpha(s: &str) -> (&str, &str) {
 }
 
 pub fn split_number(s: &str) -> (&str, &str) {
-    for (i, c) in s.chars().enumerate() {
+    for (i, c) in s.bytes().enumerate() {
         if !is_number(c) {
             return (&s[0..i], &s[i..]);
         }
@@ -68,8 +68,8 @@ pub fn split_number(s: &str) -> (&str, &str) {
 }
 
 pub fn skip_zeroes(s: &str) -> &str {
-    for (i, c) in s.chars().enumerate() {
-        if c != '0' {
+    for (i, c) in s.bytes().enumerate() {
+        if c != b'0' {
             return &s[i..];
         }
     }
@@ -78,7 +78,7 @@ pub fn skip_zeroes(s: &str) -> &str {
 }
 
 pub fn skip_separator(s: &str) -> &str {
-    for (i, c) in s.chars().enumerate() {
+    for (i, c) in s.bytes().enumerate() {
         if !is_separator(c) {
             return &s[i..];
         }
@@ -93,52 +93,52 @@ mod tests {
 
     #[test]
     fn test_is_alpha() {
-        assert!(is_alpha('a'));
-        assert!(is_alpha('z'));
-        assert!(is_alpha('A'));
-        assert!(is_alpha('Z'));
-        assert!(!is_alpha('0'));
-        assert!(!is_alpha('.'));
-        assert!(!is_alpha('-'));
-        assert!(!is_alpha(' '));
-        assert!(!is_alpha('\0'));
+        assert!(is_alpha(b'a'));
+        assert!(is_alpha(b'z'));
+        assert!(is_alpha(b'A'));
+        assert!(is_alpha(b'Z'));
+        assert!(!is_alpha(b'0'));
+        assert!(!is_alpha(b'.'));
+        assert!(!is_alpha(b'-'));
+        assert!(!is_alpha(b' '));
+        assert!(!is_alpha(b'\0'));
     }
 
     #[test]
     fn test_is_number() {
-        assert!(is_number('0'));
-        assert!(is_number('9'));
-        assert!(!is_number('a'));
-        assert!(!is_number('A'));
-        assert!(!is_number('.'));
-        assert!(!is_number('-'));
-        assert!(!is_number(' '));
-        assert!(!is_number('\0'));
+        assert!(is_number(b'0'));
+        assert!(is_number(b'9'));
+        assert!(!is_number(b'a'));
+        assert!(!is_number(b'A'));
+        assert!(!is_number(b'.'));
+        assert!(!is_number(b'-'));
+        assert!(!is_number(b' '));
+        assert!(!is_number(b'\0'));
     }
 
     #[test]
     fn test_is_separator() {
-        assert!(is_separator('.'));
-        assert!(is_separator('-'));
-        assert!(is_separator(' '));
-        assert!(!is_separator('0'));
-        assert!(!is_separator('9'));
-        assert!(!is_separator('a'));
-        assert!(!is_separator('z'));
-        assert!(!is_separator('A'));
-        assert!(!is_separator('Z'));
-        assert!(!is_separator('\0'));
+        assert!(is_separator(b'.'));
+        assert!(is_separator(b'-'));
+        assert!(is_separator(b' '));
+        assert!(!is_separator(b'0'));
+        assert!(!is_separator(b'9'));
+        assert!(!is_separator(b'a'));
+        assert!(!is_separator(b'z'));
+        assert!(!is_separator(b'A'));
+        assert!(!is_separator(b'Z'));
+        assert!(!is_separator(b'\0'));
     }
 
     #[test]
     fn test_to_lower() {
-        assert_eq!(to_lower('A'), 'a');
-        assert_eq!(to_lower('Z'), 'z');
-        assert_eq!(to_lower('a'), 'a');
-        assert_eq!(to_lower('z'), 'z');
-        assert_eq!(to_lower('0'), '0');
-        assert_eq!(to_lower('-'), '-');
-        assert_eq!(to_lower('\0'), '\0');
+        assert_eq!(to_lower(b'A'), b'a');
+        assert_eq!(to_lower(b'Z'), b'z');
+        assert_eq!(to_lower(b'a'), b'a');
+        assert_eq!(to_lower(b'z'), b'z');
+        assert_eq!(to_lower(b'0'), b'0');
+        assert_eq!(to_lower(b'-'), b'-');
+        assert_eq!(to_lower(b'\0'), b'\0');
     }
 
     #[test]

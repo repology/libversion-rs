@@ -100,7 +100,7 @@ pub fn get_next_version_component(s: &str, flags: Flags) -> (SomeComponents, &st
 
     if !alpha.is_empty()
         && !rest_after_alpha
-            .chars()
+            .bytes()
             .nth(0)
             .is_some_and(|c| is_number(c))
     {
