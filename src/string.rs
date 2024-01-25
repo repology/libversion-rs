@@ -22,6 +22,10 @@ pub fn strings_are_equal_ci(a: &str, b: &str) -> bool {
     let mut a_it = a.bytes();
     let mut b_it = b.bytes();
 
+    if a.len() != b.len() {
+        return false;
+    }
+
     loop {
         match (a_it.next(), b_it.next()) {
             (Some(a_val), Some(b_val)) => {
