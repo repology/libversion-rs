@@ -22,11 +22,12 @@ impl Ord for Component<'_> {
         self.precedence.cmp(&other.precedence).then_with(|| {
             let self_first_char = self.value.bytes().nth(0);
             if self_first_char.is_some_and(|ch| is_alpha(ch)) {
-                // string comparison: one of args is alphabetic, other is too
+                // string comparison: if one of args is alphabetic, other is too
+                // (but be sure not to panic by treating empty string as zero byte)
                 // compare lowercase (which provides us case insensitivity) of their
                 // first letters
-                let other_first_char = other.value.bytes().nth(0).unwrap();
-                to_lower(self_first_char.unwrap()).cmp(&to_lower(other_first_char))
+                let other_first_char = other.value.bytes().nth(0).unwrap_or(0);
+                to_lower(self_first_char.unwrap_or(0)).cmp(&to_lower(other_first_char))
             } else {
                 // numeric comparison: compare lengths, then values, which
                 // allows numeric comparison of arbitrary long numbers
