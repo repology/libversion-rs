@@ -1,24 +1,24 @@
 use crate::component::Component;
 use crate::string::{is_alpha, to_lower};
 
-pub fn compare_components(a: &Component, b: &Component) -> i8 {
+pub fn compare_components(a: &Component, b: &Component) -> std::cmp::Ordering {
     // precedence has highest priority
     if a.precedence < b.precedence {
-        return -1;
+        return std::cmp::Ordering::Less;
     }
     if a.precedence > b.precedence {
-        return 1;
+        return std::cmp::Ordering::Greater;
     }
 
     // empty strings come before everything
     if a.value.is_empty() && b.value.is_empty() {
-        return 0;
+        return std::cmp::Ordering::Equal;
     }
     if a.value.is_empty() {
-        return -1;
+        return std::cmp::Ordering::Less;
     }
     if b.value.is_empty() {
-        return 1;
+        return std::cmp::Ordering::Greater;
     }
 
     // alpha come before numbers
@@ -29,35 +29,35 @@ pub fn compare_components(a: &Component, b: &Component) -> i8 {
 
     if a_is_alpha && b_is_alpha {
         if to_lower(a_first) < to_lower(b_first) {
-            return -1;
+            return std::cmp::Ordering::Less;
         }
         if to_lower(a_first) > to_lower(b_first) {
-            return 1;
+            return std::cmp::Ordering::Greater;
         }
-        return 0;
+        return std::cmp::Ordering::Equal;
     }
     if a_is_alpha {
-        return -1;
+        return std::cmp::Ordering::Less;
     }
     if b_is_alpha {
-        return 1;
+        return std::cmp::Ordering::Greater;
     }
 
     // numeric comparison (note that leading zeroes are already trimmed here)
     if a.value.len() < b.value.len() {
-        return -1;
+        return std::cmp::Ordering::Less;
     }
     if a.value.len() > b.value.len() {
-        return 1;
+        return std::cmp::Ordering::Greater;
     }
 
     if a.value < b.value {
-        return -1;
+        return std::cmp::Ordering::Less;
     }
     if a.value > b.value {
-        return 1;
+        return std::cmp::Ordering::Greater;
     }
-    return 0;
+    return std::cmp::Ordering::Equal;
 }
 
 #[cfg(test)]

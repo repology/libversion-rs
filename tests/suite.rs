@@ -20,21 +20,20 @@ fn parse_flags(flags: &str) -> Flags {
     return res;
 }
 
-fn parse_op(op: &str) -> i8 {
+fn parse_op(op: &str) -> std::cmp::Ordering {
     match op {
-        "=" => return 0,
-        "<" => return -1,
-        ">" => return 1,
+        "=" => return std::cmp::Ordering::Equal,
+        "<" => return std::cmp::Ordering::Less,
+        ">" => return std::cmp::Ordering::Greater,
         _ => panic!("unexpected operator {}", op),
     }
 }
 
-fn display_op(op: i8) -> &'static str {
+fn display_op(op: std::cmp::Ordering) -> &'static str {
     match op {
-        0 => return "=",
-        -1 => return "<",
-        1 => return ">",
-        _ => panic!("unexpected comparison result {}", op),
+        std::cmp::Ordering::Equal => "=",
+        std::cmp::Ordering::Less => "<",
+        std::cmp::Ordering::Greater => ">",
     }
 }
 

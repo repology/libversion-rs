@@ -18,7 +18,7 @@ bitflags! {
     }
 }
 
-pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) -> i8 {
+pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) -> std::cmp::Ordering {
     let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
@@ -30,13 +30,13 @@ pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) ->
         let v2_comp = v2_it.next();
 
         let res = compare_components(&v1_comp, &v2_comp);
-        if res != 0 {
+        if res != std::cmp::Ordering::Equal {
             return res;
         }
 
         if v1_it.is_exhausted() && v2_it.is_exhausted() {
             if !v1_need_extra_component && !v2_need_extra_component {
-                return 0;
+                return std::cmp::Ordering::Equal;
             }
             if v1_need_extra_component {
                 v1_need_extra_component = false;
@@ -48,7 +48,7 @@ pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) ->
     }
 }
 
-pub fn version_compare2(v1: &str, v2: &str) -> i8 {
+pub fn version_compare2(v1: &str, v2: &str) -> std::cmp::Ordering {
     return version_compare4(v1, v2, Flags::empty(), Flags::empty());
 }
 
@@ -58,8 +58,8 @@ mod tests {
 
     #[test]
     fn test_version_compare() {
-        assert_eq!(version_compare2("1.0", "1.0"), 0);
-        assert_eq!(version_compare2("1.0", "1.1"), -1);
-        assert_eq!(version_compare2("1.1", "1.0"), 1);
+        assert_eq!(version_compare2("1.0", "1.0"), std::cmp::Ordering::Equal);
+        assert_eq!(version_compare2("1.0", "1.1"), std::cmp::Ordering::Less);
+        assert_eq!(version_compare2("1.1", "1.0"), std::cmp::Ordering::Greater);
     }
 }
