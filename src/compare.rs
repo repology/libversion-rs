@@ -1,14 +1,22 @@
 use crate::component::Component;
 use crate::string::{is_alpha, to_lower};
 
+macro_rules! return_if_nonequal {
+    ($a:expr, $b:expr) => {
+        {
+            if $a < $b {
+                return std::cmp::Ordering::Less;
+            }
+            if $a > $b {
+                return std::cmp::Ordering::Greater;
+            }
+        }
+    }
+}
+
 pub fn compare_components(a: &Component, b: &Component) -> std::cmp::Ordering {
     // precedence has highest priority
-    if a.precedence < b.precedence {
-        return std::cmp::Ordering::Less;
-    }
-    if a.precedence > b.precedence {
-        return std::cmp::Ordering::Greater;
-    }
+    return_if_nonequal!(a.precedence, b.precedence);
 
     // empty strings come before everything
     if a.value.is_empty() && b.value.is_empty() {
@@ -28,12 +36,7 @@ pub fn compare_components(a: &Component, b: &Component) -> std::cmp::Ordering {
     let b_is_alpha = is_alpha(b_first);
 
     if a_is_alpha && b_is_alpha {
-        if to_lower(a_first) < to_lower(b_first) {
-            return std::cmp::Ordering::Less;
-        }
-        if to_lower(a_first) > to_lower(b_first) {
-            return std::cmp::Ordering::Greater;
-        }
+        return_if_nonequal!(to_lower(a_first), to_lower(b_first));
         return std::cmp::Ordering::Equal;
     }
     if a_is_alpha {
@@ -44,19 +47,8 @@ pub fn compare_components(a: &Component, b: &Component) -> std::cmp::Ordering {
     }
 
     // numeric comparison (note that leading zeroes are already trimmed here)
-    if a.value.len() < b.value.len() {
-        return std::cmp::Ordering::Less;
-    }
-    if a.value.len() > b.value.len() {
-        return std::cmp::Ordering::Greater;
-    }
-
-    if a.value < b.value {
-        return std::cmp::Ordering::Less;
-    }
-    if a.value > b.value {
-        return std::cmp::Ordering::Greater;
-    }
+    return_if_nonequal!(a.value.len(), b.value.len());
+    return_if_nonequal!(a.value, b.value);
     return std::cmp::Ordering::Equal;
 }
 
