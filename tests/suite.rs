@@ -45,24 +45,52 @@ fn version_comparison_test_suite() {
         let left_flags = parse_flags(&case.left_flags);
         let right_flags = parse_flags(&case.right_flags);
         let expected = parse_op(&case.expected_result);
-        let result = version_compare4(
-            &case.left_version,
-            &case.right_version,
-            left_flags,
-            right_flags,
-        );
-        println!(
-            "{} {}",
-            if result == expected { "OK" } else { "FAILED" },
-            case.text
-        );
-        assert!(
-            result == expected,
-            "Test suite case {}:{}: {} failed with unexpected result {}",
-            data_path,
-            case.line_number,
-            case.text,
-            display_op(result)
-        );
+
+        {
+            let result = version_compare4(
+                &case.left_version,
+                &case.right_version,
+                left_flags,
+                right_flags,
+            );
+            println!(
+                "{} {}",
+                if result == expected { "OK" } else { "FAILED" },
+                case.text
+            );
+            assert!(
+                result == expected,
+                "Test suite case {}:{}: {} failed with unexpected result {}",
+                data_path,
+                case.line_number,
+                case.text,
+                display_op(result)
+            );
+        }
+        {
+            let result = version_compare4(
+                &case.right_version,
+                &case.left_version,
+                right_flags,
+                left_flags,
+            );
+            println!(
+                "{} {}",
+                if result == expected.reverse() {
+                    "OK"
+                } else {
+                    "FAILED"
+                },
+                case.text
+            );
+            assert!(
+                result == expected.reverse(),
+                "Test suite case {}:{}: {} reverse check failed with unexpected result {}",
+                data_path,
+                case.line_number,
+                case.text,
+                display_op(result)
+            );
+        }
     }
 }
