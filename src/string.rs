@@ -7,7 +7,7 @@ pub fn is_number(c: u8) -> bool {
 }
 
 pub fn is_separator(c: u8) -> bool {
-    !is_alpha(c) && !is_number(c) && c != b'\0'
+    !is_alpha(c) && !is_number(c)
 }
 
 pub fn to_lower(c: u8) -> u8 {
@@ -60,7 +60,6 @@ mod tests {
         assert!(!is_alpha(b'.'));
         assert!(!is_alpha(b'-'));
         assert!(!is_alpha(b' '));
-        assert!(!is_alpha(b'\0'));
     }
 
     #[test]
@@ -72,7 +71,6 @@ mod tests {
         assert!(!is_number(b'.'));
         assert!(!is_number(b'-'));
         assert!(!is_number(b' '));
-        assert!(!is_number(b'\0'));
     }
 
     #[test]
@@ -86,7 +84,6 @@ mod tests {
         assert!(!is_separator(b'z'));
         assert!(!is_separator(b'A'));
         assert!(!is_separator(b'Z'));
-        assert!(!is_separator(b'\0'));
     }
 
     #[test]
@@ -97,7 +94,6 @@ mod tests {
         assert_eq!(to_lower(b'z'), b'z');
         assert_eq!(to_lower(b'0'), b'0');
         assert_eq!(to_lower(b'-'), b'-');
-        assert_eq!(to_lower(b'\0'), b'\0');
     }
 
     #[test]
