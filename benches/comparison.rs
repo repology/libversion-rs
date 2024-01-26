@@ -33,8 +33,15 @@ fn comparison_benchmark(c: &mut Criterion) {
 
     c.bench_function("compare mixed", |b| b.iter(|| {
         version_compare2(
-            "1.2.alpha.3.beta.4.pre.5.post.6.patch.7.8a.9b.10c.11.a.12.b.13.c.d.e.f.0.0.0.0.0.0",
             "1.2.alpha.3.beta.4.pre.5.post.6.patch.7.8a.9b.10c.11.a.12.b.13.c.d.e.f.0",
+            "1.2.alpha.3.beta.4.pre.5.post.6.patch.7.8a.9b.10c.11.a.12.b.13.c.d.e.f.0",
+        )
+    }));
+
+    c.bench_function("compare different length", |b| b.iter(|| {
+        version_compare2(
+            "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0",
+            "1"
         )
     }));
 }
