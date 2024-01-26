@@ -19,36 +19,11 @@ pub fn to_lower(c: u8) -> u8 {
 }
 
 pub fn string_is_equal_to_lowercase(a: &str, b: &str) -> bool {
-    let mut a_it = a.bytes();
-    let mut b_it = b.bytes();
-
-    if a.len() != b.len() {
-        return false;
-    }
-
-    loop {
-        match (a_it.next(), b_it.next()) {
-            (Some(a_val), Some(b_val)) => {
-                if to_lower(a_val) != b_val {
-                    return false;
-                }
-            }
-            (None, None) => {
-                return true;
-            }
-            _ => {
-                return false;
-            }
-        }
-    }
+    a.len() == b.len() && a.bytes().map(|c| to_lower(c)).eq(b.bytes())
 }
 
 pub fn string_has_prefix_lowercase(s: &str, prefix: &str) -> bool {
-    if s.len() < prefix.len() {
-        return false;
-    }
-
-    return string_is_equal_to_lowercase(&s[0..prefix.len()], prefix);
+    s.len() >= prefix.len() && string_is_equal_to_lowercase(&s[0..prefix.len()], prefix)
 }
 
 pub fn split_alpha(s: &str) -> (&str, &str) {
