@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Component<'a> {
     LowerBound,
     PreRelease(u8),
@@ -36,11 +36,3 @@ impl PartialOrd for Component<'_> {
         Some(self.cmp(other))
     }
 }
-
-impl PartialEq for Component<'_> {
-    fn eq(&self, other: &Self) -> bool {
-        self.cmp(&other) == std::cmp::Ordering::Equal
-    }
-}
-
-impl Eq for Component<'_> {}
