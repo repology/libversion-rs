@@ -35,51 +35,42 @@ pub fn classify_keyword(s: &str, flags: Flags) -> KeywordClass {
 
 pub fn parse_token_to_component(input: &str, flags: Flags) -> (Component, &str) {
     let (alpha, rest) = split_alpha(input);
-    if !alpha.is_empty() {
-        return (
-            Component {
-                precedence: match classify_keyword(alpha, flags) {
-                    KeywordClass::Unknown => {
-                        if flags.contains(Flags::AnyIsPatch) {
-                            ComponentPrecedence::PostRelease
-                        } else {
-                            ComponentPrecedence::PreRelease
-                        }
+    if let Some(first_char) = alpha.bytes().nth(0) {
+        (
+            match classify_keyword(alpha, flags) {
+                KeywordClass::Unknown => {
+                    if flags.contains(Flags::AnyIsPatch) {
+                        Component::PostRelease(to_lower(first_char))
+                    } else {
+                        Component::PreRelease(to_lower(first_char))
                     }
-                    KeywordClass::PreRelease => ComponentPrecedence::PreRelease,
-                    KeywordClass::PostRelease => ComponentPrecedence::PostRelease,
-                },
-                value: alpha,
+                }
+                KeywordClass::PreRelease => Component::PreRelease(to_lower(first_char)),
+                KeywordClass::PostRelease => Component::PostRelease(to_lower(first_char)),
             },
             rest,
-        );
-    }
-
-    let (number, rest) = split_number(skip_zeroes(input));
-    return (
-        Component {
-            precedence: if number.is_empty() {
-                ComponentPrecedence::Zero
+        )
+    } else {
+        let (number, rest) = split_number(skip_zeroes(input));
+        (
+            if number.is_empty() {
+                Component::Zero
             } else {
-                ComponentPrecedence::NonZero
+                Component::NonZero(number)
             },
-            value: number,
-        },
-        rest,
-    );
+            rest,
+        )
+    }
 }
 
 pub fn make_default_component(flags: Flags) -> Component<'static> {
-    return Component {
-        precedence: if flags.contains(Flags::LowerBound) {
-            ComponentPrecedence::LowerBound
-        } else if flags.contains(Flags::UpperBound) {
-            ComponentPrecedence::UpperBound
-        } else {
-            ComponentPrecedence::Zero
-        },
-        value: "",
-    };
+    if flags.contains(Flags::LowerBound) {
+        Component::LowerBound
+    } else if flags.contains(Flags::UpperBound) {
+        Component::UpperBound
+    } else {
+        Component::Zero
+    }
 }
 
 pub enum SomeComponents<'a> {
@@ -98,26 +89,24 @@ pub fn get_next_version_component(s: &str, flags: Flags) -> (SomeComponents, &st
 
     let (alpha, rest_after_alpha) = split_alpha(rest);
 
-    if !alpha.is_empty()
-        && !rest_after_alpha
+    if let Some(first_char) = alpha.bytes().nth(0) {
+        if !rest_after_alpha
             .bytes()
             .nth(0)
             .is_some_and(|c| is_number(c))
-    {
-        return (
-            SomeComponents::Two(
-                component,
-                Component {
-                    precedence: match classify_keyword(alpha, flags) {
-                        KeywordClass::Unknown => ComponentPrecedence::LetterSuffix,
-                        KeywordClass::PreRelease => ComponentPrecedence::PreRelease,
-                        KeywordClass::PostRelease => ComponentPrecedence::PostRelease,
+        {
+            return (
+                SomeComponents::Two(
+                    component,
+                    match classify_keyword(alpha, flags) {
+                        KeywordClass::Unknown => Component::LetterSuffix(to_lower(first_char)),
+                        KeywordClass::PreRelease => Component::PreRelease(to_lower(first_char)),
+                        KeywordClass::PostRelease => Component::PostRelease(to_lower(first_char)),
                     },
-                    value: alpha,
-                },
-            ),
-            rest_after_alpha,
-        );
+                ),
+                rest_after_alpha,
+            );
+        }
     }
 
     return (SomeComponents::One(component), rest);

@@ -1,43 +1,33 @@
-use crate::string::{is_alpha, to_lower};
-
-#[derive(PartialOrd, PartialEq, Eq, Ord, Debug)]
-pub enum ComponentPrecedence {
+#[derive(Debug)]
+pub enum Component<'a> {
     LowerBound,
-    PreRelease,
+    PreRelease(u8),
     Zero,
-    PostRelease,
-    NonZero,
-    LetterSuffix,
+    PostRelease(u8),
+    NonZero(&'a str),
+    LetterSuffix(u8),
     UpperBound,
 }
 
-#[derive(Debug)]
-pub struct Component<'a> {
-    pub precedence: ComponentPrecedence,
-    pub value: &'a str,
+impl Component<'_> {
+    fn discriminant(&self) -> u8 {
+        unsafe { *(self as *const Self as *const u8) }
+    }
 }
 
 impl Ord for Component<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.precedence.cmp(&other.precedence).then_with(|| {
-            let self_first_char = self.value.bytes().nth(0);
-            if self_first_char.is_some_and(|ch| is_alpha(ch)) {
-                // string comparison: if one of args is alphabetic, other is too
-                // (but be sure not to panic by treating empty string as zero byte)
-                // compare lowercase (which provides us case insensitivity) of their
-                // first letters
-                let other_first_char = other.value.bytes().nth(0).unwrap_or(0);
-                to_lower(self_first_char.unwrap_or(0)).cmp(&to_lower(other_first_char))
-            } else {
-                // numeric comparison: compare lengths, then values, which
-                // allows numeric comparison of arbitrary long numbers
-                // note that leading zeroes are already skipped here
-                self.value
-                    .len()
-                    .cmp(&other.value.len())
-                    .then_with(|| self.value.cmp(&other.value))
-            }
-        })
+        self.discriminant()
+            .cmp(&other.discriminant())
+            .then_with(|| match (self, other) {
+                (Component::PreRelease(a), Component::PreRelease(b)) => a.cmp(&b),
+                (Component::PostRelease(a), Component::PostRelease(b)) => a.cmp(&b),
+                (Component::NonZero(a), Component::NonZero(b)) => {
+                    a.len().cmp(&b.len()).then_with(|| a.cmp(&b))
+                }
+                (Component::LetterSuffix(a), Component::LetterSuffix(b)) => a.cmp(&b),
+                _ => std::cmp::Ordering::Equal,
+            })
     }
 }
 
