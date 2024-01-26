@@ -27,43 +27,23 @@ pub fn string_has_prefix_lowercase(s: &str, prefix: &str) -> bool {
 }
 
 pub fn split_alpha(s: &str) -> (&str, &str) {
-    for (i, c) in s.bytes().enumerate() {
-        if !is_alpha(c) {
-            return (&s[0..i], &s[i..]);
-        }
-    }
-
-    return (s, &s[0..0]);
+    let pos = s.bytes().position(|c| !is_alpha(c)).unwrap_or(s.len());
+    (&s[0..pos], &s[pos..])
 }
 
 pub fn split_number(s: &str) -> (&str, &str) {
-    for (i, c) in s.bytes().enumerate() {
-        if !is_number(c) {
-            return (&s[0..i], &s[i..]);
-        }
-    }
-
-    return (s, &s[0..0]);
+    let pos = s.bytes().position(|c| !is_number(c)).unwrap_or(s.len());
+    (&s[0..pos], &s[pos..])
 }
 
 pub fn skip_zeroes(s: &str) -> &str {
-    for (i, c) in s.bytes().enumerate() {
-        if c != b'0' {
-            return &s[i..];
-        }
-    }
-
-    return &s[0..0];
+    let pos = s.bytes().position(|c| c != b'0').unwrap_or(s.len());
+    &s[pos..]
 }
 
 pub fn skip_separator(s: &str) -> &str {
-    for (i, c) in s.bytes().enumerate() {
-        if !is_separator(c) {
-            return &s[i..];
-        }
-    }
-
-    return &s[0..0];
+    let pos = s.bytes().position(|c| !is_separator(c)).unwrap_or(s.len());
+    &s[pos..]
 }
 
 #[cfg(test)]
