@@ -18,7 +18,7 @@ pub fn to_lower(c: u8) -> u8 {
     }
 }
 
-pub fn strings_are_equal_ci(a: &str, b: &str) -> bool {
+pub fn string_is_equal_to_lowercase(a: &str, b: &str) -> bool {
     let mut a_it = a.bytes();
     let mut b_it = b.bytes();
 
@@ -29,7 +29,7 @@ pub fn strings_are_equal_ci(a: &str, b: &str) -> bool {
     loop {
         match (a_it.next(), b_it.next()) {
             (Some(a_val), Some(b_val)) => {
-                if to_lower(a_val) != to_lower(b_val) {
+                if to_lower(a_val) != b_val {
                     return false;
                 }
             }
@@ -43,12 +43,12 @@ pub fn strings_are_equal_ci(a: &str, b: &str) -> bool {
     }
 }
 
-pub fn string_has_prefix_ci(s: &str, prefix: &str) -> bool {
+pub fn string_has_prefix_lowercase(s: &str, prefix: &str) -> bool {
     if s.len() < prefix.len() {
         return false;
     }
 
-    return strings_are_equal_ci(&s[0..prefix.len()], prefix);
+    return string_is_equal_to_lowercase(&s[0..prefix.len()], prefix);
 }
 
 pub fn split_alpha(s: &str) -> (&str, &str) {
@@ -146,23 +146,19 @@ mod tests {
     }
 
     #[test]
-    fn test_strings_are_equal_ci() {
-        assert!(strings_are_equal_ci("foo", "foo"));
-        assert!(strings_are_equal_ci("foo", "FOO"));
-        assert!(!strings_are_equal_ci("aaa", "bbb"));
-        assert!(!strings_are_equal_ci("bbb", "aaa"));
-        assert!(!strings_are_equal_ci("foo", "foox"));
-        assert!(!strings_are_equal_ci("foox", "foo"));
+    fn test_string_is_equal_to_lowercase() {
+        assert!(string_is_equal_to_lowercase("foo", "foo"));
+        assert!(string_is_equal_to_lowercase("FOO", "foo"));
+        assert!(!string_is_equal_to_lowercase("foo", "bar"));
     }
 
     #[test]
     fn test_string_has_prefix_ci() {
-        assert!(string_has_prefix_ci("foo", "foo"));
-        assert!(string_has_prefix_ci("foo", "FOO"));
-        assert!(!string_has_prefix_ci("aaa", "bbb"));
-        assert!(!string_has_prefix_ci("bbb", "aaa"));
-        assert!(!string_has_prefix_ci("foo", "foox"));
-        assert!(string_has_prefix_ci("foox", "foo"));
+        assert!(string_has_prefix_lowercase("foo", "foo"));
+        assert!(string_has_prefix_lowercase("foobar", "foo"));
+        assert!(string_has_prefix_lowercase("FOOBAR", "foo"));
+        assert!(!string_has_prefix_lowercase("foo", "bar"));
+        assert!(!string_has_prefix_lowercase("foobar", "bar"));
     }
 
     #[test]

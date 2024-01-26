@@ -10,24 +10,24 @@ pub enum KeywordClass {
 }
 
 pub fn classify_keyword(s: &str, flags: Flags) -> KeywordClass {
-    if strings_are_equal_ci(s, "alpha") {
+    if string_is_equal_to_lowercase(s, "alpha") {
         return KeywordClass::PreRelease;
-    } else if strings_are_equal_ci(s, "beta") {
+    } else if string_is_equal_to_lowercase(s, "beta") {
         return KeywordClass::PreRelease;
-    } else if strings_are_equal_ci(s, "rc") {
+    } else if string_is_equal_to_lowercase(s, "rc") {
         return KeywordClass::PreRelease;
-    } else if string_has_prefix_ci(s, "pre") {
+    } else if string_has_prefix_lowercase(s, "pre") {
         return KeywordClass::PreRelease;
-    } else if string_has_prefix_ci(s, "post") {
+    } else if string_has_prefix_lowercase(s, "post") {
         return KeywordClass::PostRelease;
-    } else if string_has_prefix_ci(s, "patch") {
+    } else if string_has_prefix_lowercase(s, "patch") {
         return KeywordClass::PostRelease;
-    } else if strings_are_equal_ci(s, "pl") {
+    } else if string_is_equal_to_lowercase(s, "pl") {
         // patchlevel
         return KeywordClass::PostRelease;
-    } else if strings_are_equal_ci(s, "errata") {
+    } else if string_is_equal_to_lowercase(s, "errata") {
         return KeywordClass::PostRelease;
-    } else if flags.contains(Flags::PIsPatch) && strings_are_equal_ci(s, "p") {
+    } else if flags.contains(Flags::PIsPatch) && string_is_equal_to_lowercase(s, "p") {
         return KeywordClass::PostRelease;
     }
     return KeywordClass::Unknown;
