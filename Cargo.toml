@@ -18,8 +18,4 @@ bitflags = "2.4.2"
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
-
-[dev-dependencies.regex]
-version = "1.10.3"
-default-features = false
-features = ["std"]
+regex = { version = "1.10.3", default-features = false, features = ["std"] }
