@@ -47,11 +47,9 @@ fn version_comparison_test_suite() {
         let expected = parse_op(&case.expected_result);
 
         {
-            let result = version_compare4(
-                &case.left_version,
-                &case.right_version,
-                left_flags,
-                right_flags,
+            let result = version_compare(
+                (&case.left_version, left_flags),
+                (&case.right_version, right_flags),
             );
             println!(
                 "{} {}",
@@ -68,11 +66,9 @@ fn version_comparison_test_suite() {
             );
         }
         {
-            let result = version_compare4(
-                &case.right_version,
-                &case.left_version,
-                right_flags,
-                left_flags,
+            let result = version_compare(
+                (&case.right_version, right_flags),
+                (&case.left_version, left_flags),
             );
             println!(
                 "{} {}",
