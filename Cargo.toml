@@ -1,7 +1,7 @@
 [package]
 name = "libversion"
 description = "Advanced version string comparison algorithm"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Dmitry Marakasov <amdmi3@amdmi3.ru>"]
 repository = "https://github.com/repology/libversion-rs"
 readme = "README.md"
