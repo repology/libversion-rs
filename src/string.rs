@@ -1,11 +1,16 @@
+//! # Low level ASCII char and string functions
+
+/// Check if a byte is ASCII alphabetic character
 pub fn is_alpha(c: u8) -> bool {
     c >= b'a' && c <= b'z' || c >= b'A' && c <= b'Z'
 }
 
+/// Check if a byte is ASCII digit
 pub fn is_number(c: u8) -> bool {
     c >= b'0' && c <= b'9'
 }
 
+/// Check if a byte is version compoment separator
 pub fn is_separator(c: u8) -> bool {
     !is_alpha(c) && !is_number(c)
 }
