@@ -50,5 +50,5 @@ pub fn parse_test_suite(path: &str) -> Vec<TestCase> {
         }
     }
 
-    return cases;
+    cases
 }

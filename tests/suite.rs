@@ -20,14 +20,14 @@ fn parse_flags(flags: &str) -> Flags {
         }
     }
 
-    return res;
+    res
 }
 
 fn parse_op(op: &str) -> std::cmp::Ordering {
     match op {
-        "=" => return std::cmp::Ordering::Equal,
-        "<" => return std::cmp::Ordering::Less,
-        ">" => return std::cmp::Ordering::Greater,
+        "=" => std::cmp::Ordering::Equal,
+        "<" => std::cmp::Ordering::Less,
+        ">" => std::cmp::Ordering::Greater,
         _ => panic!("unexpected operator {}", op),
     }
 }
