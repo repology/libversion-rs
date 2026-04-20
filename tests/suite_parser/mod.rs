@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::fs::File;
-use std::io::prelude::*;
 use std::io::BufReader;
+use std::io::prelude::*;
 
 #[derive(Debug)]
 pub struct TestCase {
@@ -24,8 +24,16 @@ pub fn parse_test_suite(path: &str) -> Vec<TestCase> {
 
     for (line_number, line) in reader.lines().map(|line| line.unwrap()).enumerate() {
         if let Some(captures) = re.captures(&line) {
-            let (_, [left_version, left_flags, expected_result, right_flags, right_version]) =
-                captures.extract();
+            let (
+                _,
+                [
+                    left_version,
+                    left_flags,
+                    expected_result,
+                    right_flags,
+                    right_version,
+                ],
+            ) = captures.extract();
             cases.push(TestCase {
                 line_number: line_number + 1,
                 text: line.to_string(),

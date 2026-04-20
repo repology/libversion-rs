@@ -1,6 +1,6 @@
+use crate::Flags;
 use crate::component::*;
 use crate::string::*;
-use crate::Flags;
 
 #[derive(PartialEq, Debug)]
 pub enum KeywordClass {
