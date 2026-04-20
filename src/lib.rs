@@ -17,7 +17,12 @@ bitflags! {
     }
 }
 
-fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) -> std::cmp::Ordering {
+pub fn version_compare4(
+    v1: &str,
+    v2: &str,
+    v1_flags: Flags,
+    v2_flags: Flags,
+) -> std::cmp::Ordering {
     let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
@@ -45,6 +50,10 @@ fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) -> std
             }
         }
     }
+}
+
+pub fn version_compare2(v1: &str, v2: &str) -> std::cmp::Ordering {
+    version_compare4(v1, v2, Flags::empty(), Flags::empty())
 }
 
 // AsVersionWithFlags
