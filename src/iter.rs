@@ -10,12 +10,12 @@ pub struct VersionComponentIterator<'a> {
 }
 
 impl VersionComponentIterator<'_> {
-    pub fn new<'a>(version: &'a str, flags: Flags) -> VersionComponentIterator<'a> {
-        return VersionComponentIterator {
+    pub fn new(version: &str, flags: Flags) -> VersionComponentIterator<'_> {
+        VersionComponentIterator {
             rest_of_version: version,
             carried_component: None,
             flags,
-        };
+        }
     }
 
     pub fn next(&mut self) -> Component<'_> {
@@ -29,17 +29,15 @@ impl VersionComponentIterator<'_> {
         self.rest_of_version = rest_of_version;
 
         match components {
-            SomeComponents::One(component) => {
-                return component;
-            }
+            SomeComponents::One(component) => component,
             SomeComponents::Two(component1, component2) => {
                 self.carried_component = Some(component2);
-                return component1;
+                component1
             }
         }
     }
 
     pub fn is_exhausted(&self) -> bool {
-        return self.rest_of_version.is_empty() && self.carried_component.is_none();
+        self.rest_of_version.is_empty() && self.carried_component.is_none()
     }
 }

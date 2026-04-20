@@ -31,12 +31,12 @@ pub fn classify_keyword(s: &str, flags: Flags) -> KeywordClass {
     } else if flags.contains(Flags::PIsPatch) && string_is_equal_to_lowercase(s, "p") {
         return KeywordClass::PostRelease;
     }
-    return KeywordClass::Unknown;
+    KeywordClass::Unknown
 }
 
 pub fn parse_token_to_component(input: &str, flags: Flags) -> (Component<'_>, &str) {
     let (alpha, rest) = split_alpha(input);
-    if let Some(first_char) = alpha.bytes().nth(0) {
+    if let Some(first_char) = alpha.as_bytes().first().copied() {
         (
             match classify_keyword(alpha, flags) {
                 KeywordClass::Unknown => {
@@ -90,11 +90,12 @@ pub fn get_next_version_component(s: &str, flags: Flags) -> (SomeComponents<'_>,
 
     let (alpha, rest_after_alpha) = split_alpha(rest);
 
-    if let Some(first_char) = alpha.bytes().nth(0) {
+    if let Some(first_char) = alpha.as_bytes().first().copied() {
         if !rest_after_alpha
-            .bytes()
-            .nth(0)
-            .is_some_and(|c| is_number(c))
+            .as_bytes()
+            .first()
+            .copied()
+            .is_some_and(is_number)
         {
             return (
                 SomeComponents::Two(
@@ -110,7 +111,7 @@ pub fn get_next_version_component(s: &str, flags: Flags) -> (SomeComponents<'_>,
         }
     }
 
-    return (SomeComponents::One(component), rest);
+    (SomeComponents::One(component), rest)
 }
 
 #[cfg(test)]
