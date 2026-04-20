@@ -1,43 +1,35 @@
 name: CI
-on: [ push, pull_request ]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 * * 1"
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    env:
+      RUSTFLAGS: -Dwarnings
     strategy:
       matrix:
         include:
-          - { rust: nightly }
-          - { rust: stable }
+          - { name: "Rust 1.85",    rust: "1.85" }
+          - { name: "Rust stable",  rust: stable }
+          - { name: "Rust nightly", rust: nightly-2026-04-21 }
+      fail-fast: false
+    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          components: rustfmt
-      - name: Build
-        run: cargo build
-      - name: Test
-        run: cargo test
+          components: rustfmt,clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+          cache-bin: "false"
       - name: Format check
         run: cargo fmt --check
-
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly
+      - name: Clippy check
+        run: cargo clippy --all-targets
       - name: Test
-        run: cargo test
-        env:
-          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-      - name: Collect coverage
-        uses: actions-rs/grcov@v0.1
-      - name: Submit coverage
-        uses: codecov/codecov-action@v4-beta
-        with:
-          fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: cargo test ${{ matrix.cargo_args }}

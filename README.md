@@ -1,7 +1,6 @@
 # libversion
 
 ![CI](https://github.com/repology/libversion-rs/workflows/CI/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/repology/libversion-rs/badge.svg?branch=master)](https://coveralls.io/github/repology/libversion-rs?branch=master)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/repology/libversion-rs/latest.svg)](https://github.com/repology/libversion-rs)
 
 Advanced version string comparison library.
