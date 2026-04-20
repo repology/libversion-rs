@@ -90,25 +90,24 @@ pub fn get_next_version_component(s: &str, flags: Flags) -> (SomeComponents<'_>,
 
     let (alpha, rest_after_alpha) = split_alpha(rest);
 
-    if let Some(first_char) = alpha.as_bytes().first().copied() {
-        if !rest_after_alpha
+    if let Some(first_char) = alpha.as_bytes().first().copied()
+        && !rest_after_alpha
             .as_bytes()
             .first()
             .copied()
             .is_some_and(is_number)
-        {
-            return (
-                SomeComponents::Two(
-                    component,
-                    match classify_keyword(alpha, flags) {
-                        KeywordClass::Unknown => Component::LetterSuffix(to_lower(first_char)),
-                        KeywordClass::PreRelease => Component::PreRelease(to_lower(first_char)),
-                        KeywordClass::PostRelease => Component::PostRelease(to_lower(first_char)),
-                    },
-                ),
-                rest_after_alpha,
-            );
-        }
+    {
+        return (
+            SomeComponents::Two(
+                component,
+                match classify_keyword(alpha, flags) {
+                    KeywordClass::Unknown => Component::LetterSuffix(to_lower(first_char)),
+                    KeywordClass::PreRelease => Component::PreRelease(to_lower(first_char)),
+                    KeywordClass::PostRelease => Component::PostRelease(to_lower(first_char)),
+                },
+            ),
+            rest_after_alpha,
+        );
     }
 
     (SomeComponents::One(component), rest)
