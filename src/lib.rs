@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
 use crate::iter::VersionComponentIterator;
 use bitflags::bitflags;
 use std::cmp::{Eq, Ord, Ordering, PartialEq, PartialOrd};
