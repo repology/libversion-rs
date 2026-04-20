@@ -14,8 +14,8 @@ name = "comparison"
 harness = false
 
 [dependencies]
-bitflags = "2.6.0"
+bitflags = "2.11.1"
 
 [dev-dependencies]
-criterion = { version = "0.5.1", features = ["html_reports"] }
-regex = { version = "1.10.6", default-features = false, features = ["std"] }
+criterion = { version = "0.8.2", features = ["html_reports"] }
+regex = { version = "1.12.3", default-features = false, features = ["std"] }
