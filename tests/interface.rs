@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-use libversion::*;
 use std::cmp::Ordering;
+
+use libversion::*;
 
 #[test]
 fn version_compare_strings() {

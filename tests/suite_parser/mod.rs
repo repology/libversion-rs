@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-use regex::Regex;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::prelude::*;
+
+use regex::Regex;
 
 #[derive(Debug)]
 pub struct TestCase {

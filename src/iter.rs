@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
+use std::mem;
+
 use crate::Flags;
 use crate::component::Component;
 use crate::parse::{SomeComponents, get_next_version_component};
-use std::mem;
 
 pub struct VersionComponentIterator<'a> {
     rest_of_version: &'a str,

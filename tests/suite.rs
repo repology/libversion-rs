@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-use libversion::*;
+mod suite_parser;
+
 use suite_parser::*;
 
-mod suite_parser;
+use libversion::*;
 
 fn parse_flags(flags: &str) -> Flags {
     let mut res = Flags::empty();
