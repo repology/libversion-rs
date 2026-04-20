@@ -18,7 +18,7 @@ impl VersionComponentIterator<'_> {
         };
     }
 
-    pub fn next(&mut self) -> Component {
+    pub fn next(&mut self) -> Component<'_> {
         if let Some(component) = mem::take(&mut self.carried_component) {
             return component;
         }
