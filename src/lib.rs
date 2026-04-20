@@ -26,8 +26,8 @@ pub fn version_compare4(
     let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
-    let mut v1_need_extra_component = v1_flags.intersects(Flags::LowerBound | Flags::UpperBound);
-    let mut v2_need_extra_component = v2_flags.intersects(Flags::LowerBound | Flags::UpperBound);
+    let mut will_need_extra_component = v1_flags.intersects(Flags::LowerBound | Flags::UpperBound)
+        || v2_flags.intersects(Flags::LowerBound | Flags::UpperBound);
 
     loop {
         let v1_comp = v1_it.next();
@@ -39,14 +39,10 @@ pub fn version_compare4(
         }
 
         if v1_it.is_exhausted() && v2_it.is_exhausted() {
-            if !v1_need_extra_component && !v2_need_extra_component {
+            if will_need_extra_component {
+                will_need_extra_component = false;
+            } else {
                 return std::cmp::Ordering::Equal;
-            }
-            if v1_need_extra_component {
-                v1_need_extra_component = false;
-            }
-            if v2_need_extra_component {
-                v2_need_extra_component = false;
             }
         }
     }
