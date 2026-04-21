@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-use crate::Flags;
+use crate::VersionFlags;
 use crate::component::*;
 use crate::string::*;
 
@@ -13,7 +13,7 @@ pub enum KeywordClass {
 }
 
 #[allow(clippy::if_same_then_else)]
-pub fn classify_keyword(s: &str, flags: Flags) -> KeywordClass {
+pub fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
     if string_is_equal_to_lowercase(s, "alpha") {
         return KeywordClass::PreRelease;
     } else if string_is_equal_to_lowercase(s, "beta") {
@@ -31,19 +31,19 @@ pub fn classify_keyword(s: &str, flags: Flags) -> KeywordClass {
         return KeywordClass::PostRelease;
     } else if string_is_equal_to_lowercase(s, "errata") {
         return KeywordClass::PostRelease;
-    } else if flags.contains(Flags::PIsPatch) && string_is_equal_to_lowercase(s, "p") {
+    } else if flags.contains(VersionFlags::PIsPatch) && string_is_equal_to_lowercase(s, "p") {
         return KeywordClass::PostRelease;
     }
     KeywordClass::Unknown
 }
 
-pub fn parse_token_to_component(input: &str, flags: Flags) -> (Component<'_>, &str) {
+pub fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<'_>, &str) {
     let (alpha, rest) = split_alpha(input);
     if let Some(first_char) = alpha.as_bytes().first().copied() {
         (
             match classify_keyword(alpha, flags) {
                 KeywordClass::Unknown => {
-                    if flags.contains(Flags::AnyIsPatch) {
+                    if flags.contains(VersionFlags::AnyIsPatch) {
                         Component::PostRelease(to_lower(first_char))
                     } else {
                         Component::PreRelease(to_lower(first_char))
@@ -67,10 +67,10 @@ pub fn parse_token_to_component(input: &str, flags: Flags) -> (Component<'_>, &s
     }
 }
 
-pub fn make_default_component(flags: Flags) -> Component<'static> {
-    if flags.contains(Flags::LowerBound) {
+pub fn make_default_component(flags: VersionFlags) -> Component<'static> {
+    if flags.contains(VersionFlags::LowerBound) {
         Component::LowerBound
-    } else if flags.contains(Flags::UpperBound) {
+    } else if flags.contains(VersionFlags::UpperBound) {
         Component::UpperBound
     } else {
         Component::Zero
@@ -82,7 +82,7 @@ pub enum SomeComponents<'a> {
     Two(Component<'a>, Component<'a>),
 }
 
-pub fn get_next_version_component(s: &str, flags: Flags) -> (SomeComponents<'_>, &str) {
+pub fn get_next_version_component(s: &str, flags: VersionFlags) -> (SomeComponents<'_>, &str) {
     let s = skip_separator(s);
 
     if s.is_empty() {
@@ -123,60 +123,60 @@ mod tests {
     #[test]
     fn test_classify_keyword() {
         assert_eq!(
-            classify_keyword("ALPHA", Flags::empty()),
+            classify_keyword("ALPHA", VersionFlags::empty()),
             KeywordClass::PreRelease
         );
         assert_eq!(
-            classify_keyword("ALPHABET", Flags::empty()),
+            classify_keyword("ALPHABET", VersionFlags::empty()),
             KeywordClass::Unknown
         );
         assert_eq!(
-            classify_keyword("BETA", Flags::empty()),
+            classify_keyword("BETA", VersionFlags::empty()),
             KeywordClass::PreRelease
         );
         assert_eq!(
-            classify_keyword("BETAKE", Flags::empty()),
+            classify_keyword("BETAKE", VersionFlags::empty()),
             KeywordClass::Unknown
         );
         assert_eq!(
-            classify_keyword("RC", Flags::empty()),
+            classify_keyword("RC", VersionFlags::empty()),
             KeywordClass::PreRelease
         );
         assert_eq!(
-            classify_keyword("PRE", Flags::empty()),
+            classify_keyword("PRE", VersionFlags::empty()),
             KeywordClass::PreRelease
         );
         assert_eq!(
-            classify_keyword("PRERELEASE", Flags::empty()),
+            classify_keyword("PRERELEASE", VersionFlags::empty()),
             KeywordClass::PreRelease
         );
         assert_eq!(
-            classify_keyword("POST", Flags::empty()),
+            classify_keyword("POST", VersionFlags::empty()),
             KeywordClass::PostRelease
         );
         assert_eq!(
-            classify_keyword("POSTRELEASE", Flags::empty()),
+            classify_keyword("POSTRELEASE", VersionFlags::empty()),
             KeywordClass::PostRelease
         );
         assert_eq!(
-            classify_keyword("PATCH", Flags::empty()),
+            classify_keyword("PATCH", VersionFlags::empty()),
             KeywordClass::PostRelease
         );
         assert_eq!(
-            classify_keyword("PATCHLEVEL", Flags::empty()),
+            classify_keyword("PATCHLEVEL", VersionFlags::empty()),
             KeywordClass::PostRelease
         );
         assert_eq!(
-            classify_keyword("PL", Flags::empty()),
+            classify_keyword("PL", VersionFlags::empty()),
             KeywordClass::PostRelease
         );
         assert_eq!(
-            classify_keyword("ERRATA", Flags::empty()),
+            classify_keyword("ERRATA", VersionFlags::empty()),
             KeywordClass::PostRelease
         );
 
         assert_eq!(
-            classify_keyword("FOOBAR", Flags::empty()),
+            classify_keyword("FOOBAR", VersionFlags::empty()),
             KeywordClass::Unknown
         );
     }

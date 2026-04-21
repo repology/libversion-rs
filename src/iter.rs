@@ -3,18 +3,18 @@
 
 use std::mem;
 
-use crate::Flags;
+use crate::VersionFlags;
 use crate::component::Component;
 use crate::parse::{SomeComponents, get_next_version_component};
 
 pub struct VersionComponentIterator<'a> {
     rest_of_version: &'a str,
     carried_component: Option<Component<'a>>,
-    flags: Flags,
+    flags: VersionFlags,
 }
 
 impl VersionComponentIterator<'_> {
-    pub fn new(version: &str, flags: Flags) -> VersionComponentIterator<'_> {
+    pub fn new(version: &str, flags: VersionFlags) -> VersionComponentIterator<'_> {
         VersionComponentIterator {
             rest_of_version: version,
             carried_component: None,

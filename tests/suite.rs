@@ -7,16 +7,16 @@ use suite_parser::*;
 
 use libversion::*;
 
-fn parse_flags(flags: &str) -> Flags {
-    let mut res = Flags::empty();
+fn parse_flags(flags: &str) -> VersionFlags {
+    let mut res = VersionFlags::empty();
 
     for flag in flags.chars() {
         res |= match flag {
-            'p' => Flags::PIsPatch,
-            'a' => Flags::AnyIsPatch,
-            'l' => Flags::LowerBound,
-            'u' => Flags::UpperBound,
-            _ => Flags::empty(),
+            'p' => VersionFlags::PIsPatch,
+            'a' => VersionFlags::AnyIsPatch,
+            'l' => VersionFlags::LowerBound,
+            'u' => VersionFlags::UpperBound,
+            _ => VersionFlags::empty(),
         }
     }
 

@@ -14,7 +14,7 @@ mod string;
 
 bitflags! {
     #[derive(Clone, Copy, Debug)]
-    pub struct Flags: u32 {
+    pub struct VersionFlags: u32 {
         const PIsPatch   = 0b00000001;
         const AnyIsPatch = 0b00000010;
         const LowerBound = 0b00000100;
@@ -22,12 +22,18 @@ bitflags! {
     }
 }
 
-pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) -> Ordering {
+pub fn version_compare4(
+    v1: &str,
+    v2: &str,
+    v1_flags: VersionFlags,
+    v2_flags: VersionFlags,
+) -> Ordering {
     let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
-    let mut will_need_extra_component = v1_flags.intersects(Flags::LowerBound | Flags::UpperBound)
-        || v2_flags.intersects(Flags::LowerBound | Flags::UpperBound);
+    let mut will_need_extra_component = v1_flags
+        .intersects(VersionFlags::LowerBound | VersionFlags::UpperBound)
+        || v2_flags.intersects(VersionFlags::LowerBound | VersionFlags::UpperBound);
 
     loop {
         let v1_comp = v1_it.next();
@@ -49,33 +55,33 @@ pub fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, v2_flags: Flags) ->
 }
 
 pub fn version_compare2(v1: &str, v2: &str) -> Ordering {
-    version_compare4(v1, v2, Flags::empty(), Flags::empty())
+    version_compare4(v1, v2, VersionFlags::empty(), VersionFlags::empty())
 }
 
-pub struct VersionString<T: AsRef<str> = String> {
+pub struct Version<T: AsRef<str> = String> {
     pub version: T,
-    pub flags: Flags,
+    pub flags: VersionFlags,
 }
 
-impl<T: AsRef<str>> VersionString<T> {
+impl<T: AsRef<str>> Version<T> {
     pub fn new(version: T) -> Self {
         Self {
             version,
-            flags: Flags::empty(),
+            flags: VersionFlags::empty(),
         }
     }
 
-    pub fn with_flags(version: T, flags: Flags) -> Self {
+    pub fn with_flags(version: T, flags: VersionFlags) -> Self {
         Self { version, flags }
     }
 }
 
-impl<T, U> PartialEq<VersionString<U>> for VersionString<T>
+impl<T, U> PartialEq<Version<U>> for Version<T>
 where
     T: AsRef<str>,
     U: AsRef<str>,
 {
-    fn eq(&self, other: &VersionString<U>) -> bool {
+    fn eq(&self, other: &Version<U>) -> bool {
         version_compare4(
             self.version.as_ref(),
             other.version.as_ref(),
@@ -85,12 +91,12 @@ where
     }
 }
 
-impl<T, U> PartialOrd<VersionString<U>> for VersionString<T>
+impl<T, U> PartialOrd<Version<U>> for Version<T>
 where
     T: AsRef<str>,
     U: AsRef<str>,
 {
-    fn partial_cmp(&self, other: &VersionString<U>) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Version<U>) -> Option<Ordering> {
         Some(version_compare4(
             self.version.as_ref(),
             other.version.as_ref(),
@@ -100,9 +106,9 @@ where
     }
 }
 
-impl<T: AsRef<str>> Eq for VersionString<T> {}
+impl<T: AsRef<str>> Eq for Version<T> {}
 
-impl<T: AsRef<str>> Ord for VersionString<T> {
+impl<T: AsRef<str>> Ord for Version<T> {
     fn cmp(&self, other: &Self) -> Ordering {
         version_compare4(
             self.version.as_ref(),
