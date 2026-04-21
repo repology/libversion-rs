@@ -15,10 +15,10 @@ mod string;
 bitflags! {
     #[derive(Clone, Copy, Debug)]
     pub struct VersionFlags: u32 {
-        const PIsPatch   = 0b00000001;
-        const AnyIsPatch = 0b00000010;
-        const LowerBound = 0b00000100;
-        const UpperBound = 0b00001000;
+        const P_IS_PATCH   = 1;
+        const ANY_IS_PATCH = 1 << 1;
+        const LOWER_BOUND  = 1 << 2;
+        const UPPER_BOUND  = 1 << 3;
     }
 }
 
@@ -32,8 +32,8 @@ pub fn version_compare4(
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
     let mut will_need_extra_component = v1_flags
-        .intersects(VersionFlags::LowerBound | VersionFlags::UpperBound)
-        || v2_flags.intersects(VersionFlags::LowerBound | VersionFlags::UpperBound);
+        .intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND)
+        || v2_flags.intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND);
 
     loop {
         let v1_comp = v1_it.next();

@@ -12,10 +12,10 @@ fn parse_flags(flags: &str) -> VersionFlags {
 
     for flag in flags.chars() {
         res |= match flag {
-            'p' => VersionFlags::PIsPatch,
-            'a' => VersionFlags::AnyIsPatch,
-            'l' => VersionFlags::LowerBound,
-            'u' => VersionFlags::UpperBound,
+            'p' => VersionFlags::P_IS_PATCH,
+            'a' => VersionFlags::ANY_IS_PATCH,
+            'l' => VersionFlags::LOWER_BOUND,
+            'u' => VersionFlags::UPPER_BOUND,
             _ => VersionFlags::empty(),
         }
     }

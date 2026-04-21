@@ -31,7 +31,7 @@ pub fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
         return KeywordClass::PostRelease;
     } else if string_is_equal_to_lowercase(s, "errata") {
         return KeywordClass::PostRelease;
-    } else if flags.contains(VersionFlags::PIsPatch) && string_is_equal_to_lowercase(s, "p") {
+    } else if flags.contains(VersionFlags::P_IS_PATCH) && string_is_equal_to_lowercase(s, "p") {
         return KeywordClass::PostRelease;
     }
     KeywordClass::Unknown
@@ -43,7 +43,7 @@ pub fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<
         (
             match classify_keyword(alpha, flags) {
                 KeywordClass::Unknown => {
-                    if flags.contains(VersionFlags::AnyIsPatch) {
+                    if flags.contains(VersionFlags::ANY_IS_PATCH) {
                         Component::PostRelease(to_lower(first_char))
                     } else {
                         Component::PreRelease(to_lower(first_char))
@@ -68,9 +68,9 @@ pub fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<
 }
 
 pub fn make_default_component(flags: VersionFlags) -> Component<'static> {
-    if flags.contains(VersionFlags::LowerBound) {
+    if flags.contains(VersionFlags::LOWER_BOUND) {
         Component::LowerBound
-    } else if flags.contains(VersionFlags::UpperBound) {
+    } else if flags.contains(VersionFlags::UPPER_BOUND) {
         Component::UpperBound
     } else {
         Component::Zero
