@@ -8,7 +8,7 @@ readme = "README.md"
 categories = ["algorithms", "version", "comparison"]
 license = "MIT OR Apache-2.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 
 [[bench]]
 name = "comparison"

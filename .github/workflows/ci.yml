@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - { name: "Rust 1.85",    rust: "1.85" }
+          - { name: "Rust 1.88",    rust: "1.88" }
           - { name: "Rust stable",  rust: stable }
           - { name: "Rust nightly", rust: nightly-2026-04-21 }
       fail-fast: false
