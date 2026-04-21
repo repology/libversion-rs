@@ -82,6 +82,8 @@
 //! assert!(Version::with_flags("1.0p1", VersionFlags::P_IS_PATCH) == Version::new("1.0patch1"));
 //! ```
 
+#![forbid(unsafe_code)]
+
 use std::cmp::{Eq, Ord, Ordering, PartialEq, PartialOrd};
 
 use bitflags::bitflags;
