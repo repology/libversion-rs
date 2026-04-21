@@ -1,8 +1,5 @@
 # libversion
 
-![CI](https://github.com/repology/libversion-rs/workflows/CI/badge.svg)
-[![Github commits (since latest release)](https://img.shields.io/github/commits-since/repology/libversion-rs/latest.svg)](https://github.com/repology/libversion-rs)
-
 Advanced version string comparison library.
 
 Need to compare software, package or whatever versions? Comparing
@@ -28,98 +25,84 @@ A short list of version features libversion handles for you:
   as version addendum), but `1.0alpha-1 < 1.0` (_alpha_ is treated
   as prerelease marker)
 * Awareness of _patch_, _post_ and _pl_ keywords: while `1.0alpha1 < 1.0`
-  (_alpha_ is pre-release), but `1.0 < 1.0patch1 < 1.1` (_patch_ is post-release)
+  (_alpha_ is pre-release), `1.0 < 1.0patch1 < 1.1` (_patch_ is post-release)
 * Customizable handling of _p_ keyword (it may mean either _patch_ or _pre_,
   and since libversion cannot guess, this is controlled with an external flag)
 
-See [ALGORITHM.md](https://github.com/repology/libversion/blob/master/doc/ALGORITHM.md) for more elaborate description
-of inner logic.
+Version comparison has `O(N)` complexity, implements a total order,
+is case insensitive, does not allocate, does not fail. Versions strings
+are treated as ASCII, Unicode characters will be treated as separators.
 
-## API
+## Examples
 
-### Version comparison
+The library provides both C-ish API resembling one of C `libversion`
 
+```rust
+use libversion::{VersionFlags, version_compare2, version_compare4};
+use std::cmp::Ordering;
+
+// Version comparison
+assert_eq!(version_compare2("0.99", "1.01"), Ordering::Less);
+assert_eq!(version_compare2("1.1", "1.01.0"), Ordering::Equal);
+assert_eq!(version_compare2("1.0alpha1", "1.0.beta.1"), Ordering::Less);
+assert_eq!(version_compare2("1.0.beta.2", "1.0.rc1"), Ordering::Less);
+assert_eq!(version_compare2("1.0", "1.0-rc1"), Ordering::Greater);
+
+// Ordering
+let mut versions = vec!["1.0rc1", "1.0beta1", "1.0", "1.0alpha1", "0.99"];
+versions.sort_by(|a, b| version_compare2(a, b));
+assert_eq!(versions, vec!["0.99", "1.0alpha1", "1.0beta1", "1.0rc1", "1.0"]);
+
+// With flags to tune behavior, e.g. how to resolve ambiguous cases
+assert_eq!(version_compare4("1.0p1", "1.0pre1", VersionFlags::empty(), VersionFlags::empty()), Ordering::Equal);
+assert_eq!(version_compare4("1.0p1", "1.0patch1", VersionFlags::empty(), VersionFlags::empty()), Ordering::Less);
+assert_eq!(version_compare4("1.0p1", "1.0pre1", VersionFlags::P_IS_PATCH, VersionFlags::empty()), Ordering::Greater);
+assert_eq!(version_compare4("1.0p1", "1.0patch1", VersionFlags::P_IS_PATCH, VersionFlags::empty()), Ordering::Equal);
 ```
-fn version_compare2(v1: &str, v2: &str);
-fn version_compare4(v1: &str, v2: &str, v1_flags: Flags, int v2_flags: Flags);
+
+and a Rust type storing version string along with flags, providing
+condenient `Eq` and `Ord` implementaions.
+
+```rust
+use libversion::{VersionFlags, Version};
+
+// Use with either owning or borrowed strings
+assert!(Version::new("1.0") == Version::new("1.0".to_string()));
+
+// Compare and order
+assert!(Version::new("0.99") < Version::new("1.01"));
+assert!(Version::new("1.1") == Version::new("1.01.0"));
+
+let mut versions = vec!["1.0rc1", "1.0beta1", "1.0", "1.0alpha1", "0.99"];
+versions.sort_by_key(|v| Version::new(*v));
+assert_eq!(versions, vec!["0.99", "1.0alpha1", "1.0beta1", "1.0rc1", "1.0"]);
+
+// With flags
+assert!(Version::with_flags("1.0p1", VersionFlags::P_IS_PATCH) == Version::new("1.0patch1"));
 ```
 
-Compares version strings `v1` and `v2`.
+## Safety
 
-Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **1** if `v1` is higher than `v2`.
+This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in 100% safe Rust.
 
-Thread safe, does not produce errors, does not allocate dynamic memory (this needs to checked for rust implementation),
-O(N) computational complexity, O(1) stack memory requirements.
+## Supported Rust versions
 
-4-argument form allows specifying flags for each version argument to
-tune comparison behavior in specific cases. Currently supported `flags`
-values are:
+`libversion` supports current stable Rust version and 2 most recent minor releases before it.
+Increasing MSRV is not considered a semver breaking change as long as it follows this policy.
+The current MSRV is 1.88.
 
-* `Flags:PIsPatch` _p_ letter is treated as _patch_
-  (post-release) instead of _pre_ (pre-release).
-* `Flags::AnyIsPatch` any letter sequence is treated as
-  post-release (useful for handling patchsets as in
-  `1.2foopatchset3.barpatchset4`).
-* `Flags::LowerBound` derive lowest possible version with
-  the given prefix. For example, lower bound for `1.0` is such
-  imaginary version `?` that it's higher than any release before
-  `1.0` and lower than any prerelease of `1.0`.
-  E.g. `0.999` < lower bound(`1.0`) < `1.0alpha0`.
-* `Flags::UpperBound` derive highest possible version with
-  the given prefix. Opposite of `Flags::LowerBound`.
+## Documentation
 
-If both `flags` are zero, `version_compare4` acts exactly the same
-as `version_compare2`.
-
-## Example
-
-(TODO: check that this compiles after publishing the crate)
-
-```c
-use libversion::{Flags, version_compare2, version_compare4};
-
-int main() {
-    // 0.99 < 1.11
-    assert_eq!(version_compare2("0.99", "1.11"), -1);
-
-    // 1.0 == 1.0.0
-    assert_eq!(version_compare2("1.0", "1.0.0"), 0);
-
-    // 1.0alpha1 < 1.0.rc1
-    assert_eq!(version_compare2("1.0alpha1", "1.0.rc1"), -1);
-
-    // 1.0 > 1.0.rc1
-    assert_eq!(version_compare2("1.0", "1.0-rc1"), 1);
-
-    // 1.2.3alpha4 is the same as 1.2.3~a4
-    assert_eq!(version_compare2("1.2.3alpha4", "1.2.3~a4"), 0);
-
-    // by default, `p' is treated as `pre'...
-    assert_eq!(version_compare2("1.0p1", "1.0pre1"), 0);
-    assert_eq!(version_compare2("1.0p1", "1.0post1"), -1);
-    assert_eq!(version_compare2("1.0p1", "1.0patch1"), -1);
-
-    // ...but this is tunable: here it's handled as `patch`
-    assert_eq!(version_compare4("1.0p1", "1.0pre1", Flags::PIsPatch, Flags::empty()), 1);
-    assert_eq!(version_compare4("1.0p1", "1.0post1", Flags::PIsPatch, Flags::empty()), 0);
-    assert_eq!(version_compare4("1.0p1", "1.0patch1", Flags::PIsPatch, Flags::empty()), 0);
-
-    // a way to check that the version belongs to a given release
-    assert_eq!(version_compare4("1.0alpha1", "1.0", Flags::empty(), Flags::LowerBound), 1);
-	assert_eq!(version_compare4("1.0alpha1", "1.0", Flags::empty(), Flags::UpperBound), -1);
-
-    assert_eq!(version_compare4("1.0.1", "1.0", Flags::empty(), Flags::LowerBound), 1);
-    assert_eq!(version_compare4("1.0.1", "1.0", Flags::empty(), Flags::UpperBound), -1);
-    // 1.0alpha1 and 1.0.1 belong to 1.0 release, e.g. they lie between
-    // (lowest possible version in 1.0) and (highest possible version in 1.0)
-}
-```
+See https://docs.rs/libversion/latest/libversion/ for complete documentation.
 
 ## Bindings and compatible implementations
 
-* Python: [py-libversion](https://github.com/repology/py-libversion) by @AMDmi3
 * Go: [golibversion](https://github.com/saenai255/golibversion) by @saenai255
-* Rust: [libversion-rs](https://github.com/repology/libversion-rs) by @AMDmi3
+* Perl: [Version::libversion::XS](https://github.com/giterlizzi/perl-Version-libversion-XS) by @giterlizzi
+* Python: [py-libversion](https://github.com/repology/py-libversion) by @AMDmi3
+* Raku: [Version::Repology](https://raku.land/zef:lizmat/Version::Repology) by @lizmat (a pure Raku implementation)
+* Ruby: [ruby-libversion](https://github.com/Zopolis4/ruby-libversion) by @Zopolis4
+* C: [libversion](https://github.com/repology/libversion) by @AMDmi3 (original C implementation)
 
 ## Author
 
@@ -127,4 +110,4 @@ int main() {
 
 ## License
 
-* [MIT](COPYING)
+* [MIT](COPYING-MIT) OR [Apache-2.0](COPYING-APACHE)
