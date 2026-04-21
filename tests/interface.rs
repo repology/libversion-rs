@@ -6,84 +6,107 @@ use std::cmp::Ordering;
 use libversion::*;
 
 #[test]
-fn version_compare_strings() {
-    assert_eq!(version_compare("1.1", "1.2"), Ordering::Less);
-    assert_eq!(version_compare("1.1", &String::from("1.2")), Ordering::Less);
+fn test_version_compare2() {
+    assert_eq!(version_compare2("1.1", "1.02"), Ordering::Less);
+    assert_eq!(version_compare2("1p1", "1p2"), Ordering::Less);
+}
+
+#[test]
+fn test_version_compare4() {
     assert_eq!(
-        version_compare(&String::from("1.1"), &String::from("1.2")),
+        version_compare4("1.1", "1.02", Flags::empty(), Flags::empty()),
         Ordering::Less
+    );
+    assert_eq!(
+        version_compare4("1p1", "1p2", Flags::empty(), Flags::empty()),
+        Ordering::Less
+    );
+    assert_eq!(
+        version_compare4("1p1", "1p2", Flags::PIsPatch, Flags::empty()),
+        Ordering::Greater
     );
 }
 
 #[test]
-fn version_compare_tuples() {
-    assert_eq!(
-        version_compare(("1.1", Flags::empty()), ("1.2", Flags::empty())),
-        Ordering::Less
-    );
-    assert_eq!(
-        version_compare(
-            (&String::from("1.1"), Flags::empty()),
-            (&String::from("1.2"), Flags::empty())
-        ),
-        Ordering::Less
-    );
-    assert_eq!(
-        version_compare(&("1.1", Flags::empty()), &("1.2", Flags::empty())),
-        Ordering::Less
-    );
-    assert_eq!(
-        version_compare(
-            &(&String::from("1.1"), Flags::empty()),
-            &(&String::from("1.2"), Flags::empty())
-        ),
-        Ordering::Less
-    );
-}
+fn test_version_string_eq() {
+    assert!(VersionString::new("1.1") == VersionString::new("1.01"));
+    assert!(VersionString::new("1.1".to_string()) == VersionString::new("1.01"));
+    assert!(VersionString::new("1.1") == VersionString::new("1.01".to_string()));
+    assert!(VersionString::new("1.1".to_string()) == VersionString::new("1.01".to_string()));
 
-#[test]
-fn version_compare_version_str() {
-    assert_eq!(
-        version_compare(
-            &VersionStr::new("1.1", Flags::empty()),
-            &VersionStr::new("1.2", Flags::empty())
-        ),
-        Ordering::Less
-    );
-}
-
-#[test]
-fn version_compare_version_string() {
-    assert_eq!(
-        version_compare(
-            &VersionString::new(String::from("1.1"), Flags::empty()),
-            &VersionString::new(String::from("1.2"), Flags::empty())
-        ),
-        Ordering::Less
-    );
-}
-
-#[test]
-fn cmp_version_str() {
-    assert!(VersionStr::new("1.1", Flags::empty()) < VersionStr::new("1.2", Flags::empty()));
     assert!(
-        VersionStr::new("1.1", Flags::empty()) < VersionString::new("1.2".into(), Flags::empty())
-    );
-    assert!(VersionStr::new("1.1", Flags::empty()) < "1.2");
-    assert!(VersionStr::new("1.1", Flags::empty()) < &String::from("1.2"));
-    assert!(VersionStr::new("1.1", Flags::empty()) < ("1.2", Flags::empty()));
-}
-
-#[test]
-fn cmp_version_string() {
-    assert!(
-        VersionString::new("1.1".into(), Flags::empty()) < VersionStr::new("1.2", Flags::empty())
+        VersionString::with_flags("1.1", Flags::empty())
+            == VersionString::with_flags("1.01", Flags::empty())
     );
     assert!(
-        VersionString::new("1.1".into(), Flags::empty())
-            < VersionString::new("1.2".into(), Flags::empty())
+        VersionString::with_flags("1.1".to_string(), Flags::empty())
+            == VersionString::with_flags("1.01", Flags::empty())
     );
-    assert!(VersionString::new("1.1".into(), Flags::empty()) < "1.2");
-    assert!(VersionString::new("1.1".into(), Flags::empty()) < &String::from("1.2"));
-    assert!(VersionString::new("1.1".into(), Flags::empty()) < ("1.2", Flags::empty()));
+    assert!(
+        VersionString::with_flags("1.1", Flags::empty())
+            == VersionString::with_flags("1.01".to_string(), Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1.1".to_string(), Flags::empty())
+            == VersionString::with_flags("1.01".to_string(), Flags::empty())
+    );
+
+    assert!(
+        VersionString::with_flags("1.1", Flags::LowerBound)
+            != VersionString::with_flags("1.01", Flags::UpperBound)
+    );
+    assert!(
+        VersionString::with_flags("1.1".to_string(), Flags::LowerBound)
+            != VersionString::with_flags("1.01", Flags::UpperBound)
+    );
+    assert!(
+        VersionString::with_flags("1.1", Flags::LowerBound)
+            != VersionString::with_flags("1.01".to_string(), Flags::UpperBound)
+    );
+    assert!(
+        VersionString::with_flags("1.1".to_string(), Flags::LowerBound)
+            != VersionString::with_flags("1.01".to_string(), Flags::UpperBound)
+    );
+}
+
+#[test]
+fn test_version_string_ord() {
+    assert!(VersionString::new("1.1") < VersionString::new("1.02"));
+    assert!(VersionString::new("1.1".to_string()) < VersionString::new("1.02"));
+    assert!(VersionString::new("1.1") < VersionString::new("1.02".to_string()));
+    assert!(VersionString::new("1.1".to_string()) < VersionString::new("1.02".to_string()));
+
+    assert!(
+        VersionString::with_flags("1p1", Flags::empty())
+            < VersionString::with_flags("1p2", Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1p1".to_string(), Flags::empty())
+            < VersionString::with_flags("1p2", Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1p1", Flags::empty())
+            < VersionString::with_flags("1p2".to_string(), Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1p1".to_string(), Flags::empty())
+            < VersionString::with_flags("1p2".to_string(), Flags::empty())
+    );
+
+    assert!(
+        VersionString::with_flags("1p1", Flags::PIsPatch)
+            > VersionString::with_flags("1p2", Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1p1".to_string(), Flags::PIsPatch)
+            > VersionString::with_flags("1p2", Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1p1", Flags::PIsPatch)
+            > VersionString::with_flags("1p2".to_string(), Flags::empty())
+    );
+    assert!(
+        VersionString::with_flags("1p1".to_string(), Flags::PIsPatch)
+            > VersionString::with_flags("1p2".to_string(), Flags::empty())
+    );
 }
