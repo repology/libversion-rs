@@ -28,7 +28,7 @@ fn parse_op(op: &str) -> std::cmp::Ordering {
         "=" => std::cmp::Ordering::Equal,
         "<" => std::cmp::Ordering::Less,
         ">" => std::cmp::Ordering::Greater,
-        _ => panic!("unexpected operator {}", op),
+        _ => panic!("unexpected operator {op}"),
     }
 }
 
