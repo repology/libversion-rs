@@ -39,18 +39,18 @@ pub fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
 
 pub fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<'_>, &str) {
     let (alpha, rest) = split_alpha(input);
-    if let Some(first_char) = alpha.as_bytes().first().copied() {
+    if let Some(first_char) = alpha.as_bytes().first().map(|c| c.to_ascii_lowercase()) {
         (
             match classify_keyword(alpha, flags) {
                 KeywordClass::Unknown => {
                     if flags.contains(VersionFlags::ANY_IS_PATCH) {
-                        Component::PostRelease(to_lower(first_char))
+                        Component::PostRelease(first_char)
                     } else {
-                        Component::PreRelease(to_lower(first_char))
+                        Component::PreRelease(first_char)
                     }
                 }
-                KeywordClass::PreRelease => Component::PreRelease(to_lower(first_char)),
-                KeywordClass::PostRelease => Component::PostRelease(to_lower(first_char)),
+                KeywordClass::PreRelease => Component::PreRelease(first_char),
+                KeywordClass::PostRelease => Component::PostRelease(first_char),
             },
             rest,
         )
@@ -93,20 +93,20 @@ pub fn get_next_version_component(s: &str, flags: VersionFlags) -> (SomeComponen
 
     let (alpha, rest_after_alpha) = split_alpha(rest);
 
-    if let Some(first_char) = alpha.as_bytes().first().copied()
+    if let Some(first_char) = alpha.as_bytes().first().map(|c| c.to_ascii_lowercase())
         && !rest_after_alpha
             .as_bytes()
             .first()
             .copied()
-            .is_some_and(is_number)
+            .is_some_and(|c| c.is_ascii_digit())
     {
         return (
             SomeComponents::Two(
                 component,
                 match classify_keyword(alpha, flags) {
-                    KeywordClass::Unknown => Component::LetterSuffix(to_lower(first_char)),
-                    KeywordClass::PreRelease => Component::PreRelease(to_lower(first_char)),
-                    KeywordClass::PostRelease => Component::PostRelease(to_lower(first_char)),
+                    KeywordClass::Unknown => Component::LetterSuffix(first_char),
+                    KeywordClass::PreRelease => Component::PreRelease(first_char),
+                    KeywordClass::PostRelease => Component::PostRelease(first_char),
                 },
             ),
             rest_after_alpha,
