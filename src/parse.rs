@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 use crate::VersionFlags;
-use crate::component::*;
-use crate::string::*;
+use crate::component::Component;
+use crate::string::{
+    skip_separator, skip_zeroes, split_alpha, split_number, string_has_prefix_lowercase,
+    string_is_equal_to_lowercase,
+};
 
 #[derive(PartialEq, Debug)]
 pub enum KeywordClass {
