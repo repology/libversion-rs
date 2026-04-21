@@ -30,8 +30,9 @@
 //! * Customizable handling of _p_ keyword (it may mean either _patch_ or _pre_,
 //!   and since libversion cannot guess, this is controlled with an external flag)
 //!
-//! Version comparison has `O(N)` complexity, does not allocate, does not fail
-//! and implements a total order.
+//! Version comparison has `O(N)` complexity, implements a total order,
+//! is case insensitive, does not allocate, does not fail. Versions strings
+//! are treated as ASCII, Unicode characters will be treated as separators.
 //!
 //! # Examples
 //!
@@ -60,7 +61,8 @@
 //! assert_eq!(version_compare4("1.0p1", "1.0patch1", VersionFlags::P_IS_PATCH, VersionFlags::empty()), Ordering::Equal);
 //! ```
 //!
-//! and Rust type to store version along with flags
+//! and a Rust type storing version string along with flags, providing
+//! condenient `Eq` and `Ord` implementaions.
 //!
 //! ```
 //! use libversion::{VersionFlags, Version};
