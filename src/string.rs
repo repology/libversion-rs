@@ -13,7 +13,7 @@ pub fn is_number(c: u8) -> bool {
     c.is_ascii_digit()
 }
 
-/// Check if a byte is version compoment separator
+/// Check if a byte is version component separator
 pub fn is_separator(c: u8) -> bool {
     !is_alpha(c) && !is_number(c)
 }
