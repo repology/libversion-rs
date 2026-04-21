@@ -8,6 +8,10 @@ use criterion::{Criterion, criterion_group, criterion_main};
 use libversion::*;
 
 fn comparison_benchmark(c: &mut Criterion) {
+    c.bench_function("compare short", |b| {
+        b.iter(|| black_box(version_compare2(black_box("1.2.3"), black_box("1.3.4"))))
+    });
+
     c.bench_function("compare numeric", |b| {
         b.iter(|| {
             black_box(
