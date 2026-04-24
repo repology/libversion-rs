@@ -62,7 +62,7 @@
 //! ```
 //!
 //! and a Rust type storing version string along with flags, providing
-//! condenient `Eq` and `Ord` implementaions.
+//! convenient `Eq` and `Ord` implementations.
 //!
 //! ```
 //! use libversion::{VersionFlags, Version};

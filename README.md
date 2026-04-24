@@ -61,7 +61,7 @@ assert_eq!(version_compare4("1.0p1", "1.0patch1", VersionFlags::P_IS_PATCH, Vers
 ```
 
 and a Rust type storing version string along with flags, providing
-condenient `Eq` and `Ord` implementaions.
+convenient `Eq` and `Ord` implementations.
 
 ```rust
 use libversion::{VersionFlags, Version};
