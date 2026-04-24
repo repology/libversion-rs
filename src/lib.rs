@@ -255,6 +255,7 @@ pub fn version_compare2(v1: &str, v2: &str) -> Ordering {
 /// assert!(Version::new("1.0".to_string()) < Version::new("1.1".to_string()));
 /// assert!(Version::new("1.1".to_string()) == Version::new("1.0001".to_string()));
 /// ```
+#[derive(Debug)]
 pub struct Version<T: AsRef<str> = String> {
     /// Version string.
     pub version: T,
