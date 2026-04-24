@@ -84,7 +84,7 @@
 
 #![forbid(unsafe_code)]
 
-use std::cmp::{Eq, Ord, Ordering, PartialEq, PartialOrd};
+use std::cmp::Ordering;
 
 use bitflags::bitflags;
 
