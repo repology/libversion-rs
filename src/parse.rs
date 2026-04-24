@@ -15,28 +15,24 @@ pub(crate) enum KeywordClass {
     PostRelease,
 }
 
-#[allow(clippy::if_same_then_else)]
 pub(crate) fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
-    if string_is_equal_to_lowercase(s, "alpha") {
+    if string_is_equal_to_lowercase(s, "alpha")
+        || string_is_equal_to_lowercase(s, "beta")
+        || string_is_equal_to_lowercase(s, "rc")
+        || string_has_prefix_lowercase(s, "pre")
+    {
         return KeywordClass::PreRelease;
-    } else if string_is_equal_to_lowercase(s, "beta") {
-        return KeywordClass::PreRelease;
-    } else if string_is_equal_to_lowercase(s, "rc") {
-        return KeywordClass::PreRelease;
-    } else if string_has_prefix_lowercase(s, "pre") {
-        return KeywordClass::PreRelease;
-    } else if string_has_prefix_lowercase(s, "post") {
-        return KeywordClass::PostRelease;
-    } else if string_has_prefix_lowercase(s, "patch") {
-        return KeywordClass::PostRelease;
-    } else if string_is_equal_to_lowercase(s, "pl") {
-        // patchlevel
-        return KeywordClass::PostRelease;
-    } else if string_is_equal_to_lowercase(s, "errata") {
-        return KeywordClass::PostRelease;
-    } else if flags.contains(VersionFlags::P_IS_PATCH) && string_is_equal_to_lowercase(s, "p") {
+    }
+
+    if string_is_equal_to_lowercase(s, "errata")
+        || string_is_equal_to_lowercase(s, "pl")
+        || string_has_prefix_lowercase(s, "patch")
+        || string_has_prefix_lowercase(s, "post")
+        || (flags.contains(VersionFlags::P_IS_PATCH) && string_is_equal_to_lowercase(s, "p"))
+    {
         return KeywordClass::PostRelease;
     }
+
     KeywordClass::Unknown
 }
 
