@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Component<'a> {
+pub(crate) enum Component<'a> {
     LowerBound,
     PreRelease(u8),
     Zero,

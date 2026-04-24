@@ -9,14 +9,14 @@ use crate::string::{
 };
 
 #[derive(PartialEq, Debug)]
-pub enum KeywordClass {
+pub(crate) enum KeywordClass {
     Unknown,
     PreRelease,
     PostRelease,
 }
 
 #[allow(clippy::if_same_then_else)]
-pub fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
+pub(crate) fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
     if string_is_equal_to_lowercase(s, "alpha") {
         return KeywordClass::PreRelease;
     } else if string_is_equal_to_lowercase(s, "beta") {
@@ -40,7 +40,7 @@ pub fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
     KeywordClass::Unknown
 }
 
-pub fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<'_>, &str) {
+pub(crate) fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<'_>, &str) {
     let (alpha, rest) = split_alpha(input);
     if let Some(first_char) = alpha.as_bytes().first().map(|c| c.to_ascii_lowercase()) {
         (
@@ -70,7 +70,7 @@ pub fn parse_token_to_component(input: &str, flags: VersionFlags) -> (Component<
     }
 }
 
-pub fn make_default_component(flags: VersionFlags) -> Component<'static> {
+pub(crate) fn make_default_component(flags: VersionFlags) -> Component<'static> {
     if flags.contains(VersionFlags::LOWER_BOUND) {
         Component::LowerBound
     } else if flags.contains(VersionFlags::UPPER_BOUND) {
@@ -80,12 +80,15 @@ pub fn make_default_component(flags: VersionFlags) -> Component<'static> {
     }
 }
 
-pub enum SomeComponents<'a> {
+pub(crate) enum SomeComponents<'a> {
     One(Component<'a>),
     Two(Component<'a>, Component<'a>),
 }
 
-pub fn get_next_version_component(s: &str, flags: VersionFlags) -> (SomeComponents<'_>, &str) {
+pub(crate) fn get_next_version_component(
+    s: &str,
+    flags: VersionFlags,
+) -> (SomeComponents<'_>, &str) {
     let s = skip_separator(s);
 
     if s.is_empty() {

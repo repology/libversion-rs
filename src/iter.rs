@@ -7,14 +7,14 @@ use crate::VersionFlags;
 use crate::component::Component;
 use crate::parse::{SomeComponents, get_next_version_component};
 
-pub struct VersionComponentIterator<'a> {
+pub(crate) struct VersionComponentIterator<'a> {
     rest_of_version: &'a str,
     carried_component: Option<Component<'a>>,
     flags: VersionFlags,
 }
 
 impl VersionComponentIterator<'_> {
-    pub fn new(version: &str, flags: VersionFlags) -> VersionComponentIterator<'_> {
+    pub(crate) fn new(version: &str, flags: VersionFlags) -> VersionComponentIterator<'_> {
         VersionComponentIterator {
             rest_of_version: version,
             carried_component: None,
@@ -22,7 +22,7 @@ impl VersionComponentIterator<'_> {
         }
     }
 
-    pub fn next(&mut self) -> Component<'_> {
+    pub(crate) fn next(&mut self) -> Component<'_> {
         if let Some(component) = mem::take(&mut self.carried_component) {
             return component;
         }
@@ -41,7 +41,7 @@ impl VersionComponentIterator<'_> {
         }
     }
 
-    pub fn is_exhausted(&self) -> bool {
+    pub(crate) fn is_exhausted(&self) -> bool {
         self.rest_of_version.is_empty() && self.carried_component.is_none()
     }
 }

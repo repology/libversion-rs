@@ -4,19 +4,19 @@
 //! # Low level ASCII char and string functions
 
 /// Check if a byte is version component separator
-pub fn is_separator(c: u8) -> bool {
+pub(crate) fn is_separator(c: u8) -> bool {
     !c.is_ascii_alphabetic() && !c.is_ascii_digit()
 }
 
-pub fn string_is_equal_to_lowercase(a: &str, b: &str) -> bool {
+pub(crate) fn string_is_equal_to_lowercase(a: &str, b: &str) -> bool {
     a.len() == b.len() && a.bytes().map(|c| c.to_ascii_lowercase()).eq(b.bytes())
 }
 
-pub fn string_has_prefix_lowercase(s: &str, prefix: &str) -> bool {
+pub(crate) fn string_has_prefix_lowercase(s: &str, prefix: &str) -> bool {
     s.len() >= prefix.len() && string_is_equal_to_lowercase(&s[0..prefix.len()], prefix)
 }
 
-pub fn split_alpha(s: &str) -> (&str, &str) {
+pub(crate) fn split_alpha(s: &str) -> (&str, &str) {
     let pos = s
         .bytes()
         .position(|c| !c.is_ascii_alphabetic())
@@ -24,7 +24,7 @@ pub fn split_alpha(s: &str) -> (&str, &str) {
     (&s[0..pos], &s[pos..])
 }
 
-pub fn split_number(s: &str) -> (&str, &str) {
+pub(crate) fn split_number(s: &str) -> (&str, &str) {
     let pos = s
         .bytes()
         .position(|c| !c.is_ascii_digit())
@@ -32,12 +32,12 @@ pub fn split_number(s: &str) -> (&str, &str) {
     (&s[0..pos], &s[pos..])
 }
 
-pub fn skip_zeroes(s: &str) -> &str {
+pub(crate) fn skip_zeroes(s: &str) -> &str {
     let pos = s.bytes().position(|c| c != b'0').unwrap_or(s.len());
     &s[pos..]
 }
 
-pub fn skip_separator(s: &str) -> &str {
+pub(crate) fn skip_separator(s: &str) -> &str {
     let pos = s.bytes().position(|c| !is_separator(c)).unwrap_or(s.len());
     &s[pos..]
 }
