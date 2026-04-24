@@ -200,6 +200,11 @@ pub fn version_compare4(
     let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
     let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
 
+    // When either version uses LOWER_BOUND or UPPER_BOUND, the iterator
+    // produces a synthetic component (LowerBound or UpperBound) instead of
+    // Zero after the component sequence is exhausted. This synthetic component
+    // must be consumed to take effect, so we do one extra iteration after both
+    // iterators appear exhausted.
     let mut will_need_extra_component = v1_flags
         .intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND)
         || v2_flags.intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND);
