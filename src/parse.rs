@@ -9,13 +9,13 @@ use crate::string::{
 };
 
 #[derive(PartialEq, Debug)]
-pub(crate) enum KeywordClass {
+enum KeywordClass {
     Unknown,
     PreRelease,
     PostRelease,
 }
 
-pub(crate) fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
+fn classify_keyword(s: &str, flags: VersionFlags) -> KeywordClass {
     if string_is_equal_to_lowercase(s, "alpha")
         || string_is_equal_to_lowercase(s, "beta")
         || string_is_equal_to_lowercase(s, "rc")
