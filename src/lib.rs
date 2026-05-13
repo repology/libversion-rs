@@ -147,6 +147,8 @@ bitflags! {
         /// belongs to a major/minor/patch release branch, regardless of whether it's
         /// post or pre-release.
         ///
+        /// It is invalid to mix [`LOWER_BOUND`] and [`UPPER_BOUND`] flags.
+        ///
         /// ```
         /// # use libversion::{Version, VersionFlags};
         /// assert!(Version::with_flags("1.0", VersionFlags::LOWER_BOUND) > Version::new("0.99"));
@@ -164,6 +166,8 @@ bitflags! {
         /// Together with [`LOWER_BOUND`], this flag is useful to check if a version
         /// belongs to a major/minor/patch release branch, regardless of whether it's
         /// post or pre-release.
+        ///
+        /// It is invalid to mix [`LOWER_BOUND`] and [`UPPER_BOUND`] flags.
         ///
         /// ```
         /// # use libversion::{Version, VersionFlags};
