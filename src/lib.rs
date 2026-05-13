@@ -180,7 +180,7 @@ bitflags! {
 
 /// Compare two versions.
 ///
-/// Compare `v1` with [`VersionFlags`] `v1_flags` against `v2` with [`VersionFlags`] `v2_flags`.
+/// Compare `lhs_version` with [`VersionFlags`] `lhs_flags` against `rhs_version` with [`VersionFlags`] `rhs_flags`.
 ///
 /// ```
 /// # use std::cmp::Ordering;
@@ -196,33 +196,33 @@ bitflags! {
 /// );
 /// ```
 pub fn version_compare4(
-    v1: &str,
-    v2: &str,
-    v1_flags: VersionFlags,
-    v2_flags: VersionFlags,
+    lhs_version: &str,
+    rhs_version: &str,
+    lhs_flags: VersionFlags,
+    rhs_flags: VersionFlags,
 ) -> Ordering {
-    let mut v1_it = VersionComponentIterator::new(v1, v1_flags);
-    let mut v2_it = VersionComponentIterator::new(v2, v2_flags);
+    let mut lhs_iter = VersionComponentIterator::new(lhs_version, lhs_flags);
+    let mut rhs_iter = VersionComponentIterator::new(rhs_version, rhs_flags);
 
     // When either version uses LOWER_BOUND or UPPER_BOUND, the iterator
     // produces a synthetic component (LowerBound or UpperBound) instead of
     // Zero after the component sequence is exhausted. This synthetic component
     // must be consumed to take effect, so we do one extra iteration after both
     // iterators appear exhausted.
-    let mut will_need_extra_component = v1_flags
+    let mut will_need_extra_component = lhs_flags
         .intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND)
-        || v2_flags.intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND);
+        || rhs_flags.intersects(VersionFlags::LOWER_BOUND | VersionFlags::UPPER_BOUND);
 
     loop {
-        let v1_comp = v1_it.next();
-        let v2_comp = v2_it.next();
+        let lhs_component = lhs_iter.next();
+        let rhs_component = rhs_iter.next();
 
-        let res = v1_comp.cmp(&v2_comp);
+        let res = lhs_component.cmp(&rhs_component);
         if res != Ordering::Equal {
             return res;
         }
 
-        if v1_it.is_exhausted() && v2_it.is_exhausted() {
+        if lhs_iter.is_exhausted() && rhs_iter.is_exhausted() {
             if will_need_extra_component {
                 will_need_extra_component = false;
             } else {
@@ -234,7 +234,7 @@ pub fn version_compare4(
 
 /// Compare two versions with default flags.
 ///
-/// Same as `version_compare4(v1, v2, VersionFlags::empty(), VersionFlags::empty())`.
+/// Same as `version_compare4(lhs_version, rhs_version, VersionFlags::empty(), VersionFlags::empty())`.
 ///
 /// ```
 /// # use std::cmp::Ordering;
@@ -244,8 +244,13 @@ pub fn version_compare4(
 ///     Ordering::Less
 /// );
 /// ```
-pub fn version_compare2(v1: &str, v2: &str) -> Ordering {
-    version_compare4(v1, v2, VersionFlags::empty(), VersionFlags::empty())
+pub fn version_compare2(lhs_version: &str, rhs_version: &str) -> Ordering {
+    version_compare4(
+        lhs_version,
+        rhs_version,
+        VersionFlags::empty(),
+        VersionFlags::empty(),
+    )
 }
 
 /// Version string with flags.
