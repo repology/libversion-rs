@@ -3,7 +3,6 @@
 [![Build status](https://github.com/repology/libversion-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/repology/libversion-rs/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/libversion)](https://crates.io/crates/libversion)
 [![Documentation](https://docs.rs/libversion/badge.svg)](https://docs.rs/libversion)
-[![Github commits (since latest release)](https://img.shields.io/github/commits-since/repology/libversion-rs/latest.svg)](https://github.com/repology/libversion-rs/commits/master/)
 
 Advanced version string comparison library.
 
