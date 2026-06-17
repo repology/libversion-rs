@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Copyright 2024 Dmitry Marakasov <amdmi3@amdmi3.ru>
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
+use std::cmp::Ordering;
+
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Component<'a> {
     LowerBound,
@@ -27,7 +29,7 @@ impl Component<'_> {
 }
 
 impl Ord for Component<'_> {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
         self.discriminant()
             .cmp(&other.discriminant())
             .then_with(|| match (self, other) {
@@ -37,21 +39,19 @@ impl Ord for Component<'_> {
                     a.len().cmp(&b.len()).then_with(|| a.cmp(b))
                 }
                 (Component::LetterSuffix(a), Component::LetterSuffix(b)) => a.cmp(b),
-                _ => std::cmp::Ordering::Equal,
+                _ => Ordering::Equal,
             })
     }
 }
 
 impl PartialOrd for Component<'_> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use itertools::Itertools;
-
     use super::*;
 
     #[test]
@@ -77,11 +77,18 @@ mod tests {
             Component::UpperBound,
         ];
 
-        for (lhs, rhs) in ordered.iter().tuple_windows() {
-            assert!(
-                lhs < rhs,
-                "Component ordering violation, {lhs:?} must be lower than {rhs:?}"
-            );
+        for (lhs_index, lhs) in ordered.iter().enumerate() {
+            for (rhs_index, rhs) in ordered.iter().enumerate() {
+                let expected_ordering = lhs_index.cmp(&rhs_index);
+                assert!(
+                    lhs.cmp(rhs) == expected_ordering,
+                    "Component Ord violation, expected {lhs:?} {expected_ordering:?} {rhs:?}"
+                );
+                assert!(
+                    lhs.partial_cmp(rhs) == Some(expected_ordering),
+                    "Component PartialOrd violation, expected {lhs:?} {expected_ordering:?} {rhs:?}"
+                );
+            }
         }
     }
 }
