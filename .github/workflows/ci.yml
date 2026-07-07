@@ -13,7 +13,7 @@ jobs:
         include:
           - { name: "Rust 1.88",    rust: "1.88" }
           - { name: "Rust stable",  rust: stable }
-          - { name: "Rust nightly", rust: nightly-2026-05-11 }
+          - { name: "Rust nightly", rust: nightly-2026-07-07 }
       fail-fast: false
     runs-on: ubuntu-latest
     name: ${{ matrix.name }}
