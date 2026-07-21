@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- Minor documentation fixes.
+
 ## 0.3.2
 
 - Derive `Debug` for `Version`.
