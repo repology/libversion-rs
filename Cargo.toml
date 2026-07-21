@@ -16,11 +16,11 @@ name = "comparison"
 harness = false
 
 [dependencies]
-bitflags = "2.13.0"
+bitflags = "2.13.1"
 
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
-regex = { version = "1.12.4", default-features = false, features = ["std"] }
+regex = { version = "1.13.1", default-features = false, features = ["std"] }
 
 [lints.clippy]
 uninlined_format_args = "warn"
