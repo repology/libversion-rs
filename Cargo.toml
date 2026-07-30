@@ -19,7 +19,7 @@ harness = false
 bitflags = "2.13.1"
 
 [dev-dependencies]
-criterion = { version = "0.8.2", features = ["html_reports"] }
+criterion = { version = "0.8.2", default-features = false, features = ["cargo_bench_support"] }
 regex = { version = "1.13.1", default-features = false, features = ["std"] }
 
 [lints.clippy]
